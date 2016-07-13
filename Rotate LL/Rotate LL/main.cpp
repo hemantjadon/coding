@@ -1,8 +1,8 @@
 //
 //  main.cpp
-//  Linked List
+//  Rotate LL
 //
-//  Created by Hemant Jadon on 02/07/16.
+//  Created by Hemant Jadon on 13/07/16.
 //  Copyright (c) 2016 Hemant Jadon. All rights reserved.
 //
 
@@ -255,8 +255,38 @@ public:
     }
 };
 
+class LL : public LinkedList{
+public:
+    void rotateLL(int k){
+        Node* ptr1 = this->getHead();   // First Pointer
+        Node* ptr2 = this->getHead();   // Second Pointer
+        
+        while (k > 1 && ptr2) {
+            ptr2 = ptr2->getNext();
+            k--;
+        }
+        
+        // Returning If ptr2 becomes NULL ie. length of list is less than k.
+        if (ptr2 == NULL) {
+            return ;
+        }
+        
+        this->getTail()->setNext(ptr1);
+        ptr1->setPrev(this->getTail());
+        
+        this->setHead(ptr2->getNext());
+        ptr2->getNext()->setPrev(NULL);
+        
+        this->setTail(ptr2);
+        
+        ptr2->setNext(NULL);
+    }
+};
+
 int main(int argc, const char * argv[]) {
-    LinkedList list;
+    LL list;
     list.createLL();
+    list.printLL();
+    list.rotateLL(4);
     list.printLL();
 }
