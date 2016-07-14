@@ -1,12 +1,13 @@
 //
 //  main.cpp
-//  Linked List
+//  Merge K Sorted LL
 //
-//  Created by Hemant Jadon on 02/07/16.
+//  Created by Hemant Jadon on 13/07/16.
 //  Copyright (c) 2016 Hemant Jadon. All rights reserved.
 //
 
 #include <iostream>
+#define N 3
 using namespace std;
 
 class Node{
@@ -323,7 +324,7 @@ public:
             else {
                 after->getNext()->setPrev(a.getTail());
                 a.getTail()->setNext(after->getNext());
-                
+
                 after->setNext(a.getHead());
                 a.getHead()->setPrev(after);
             }
@@ -374,8 +375,82 @@ public:
     }
 };
 
+LinkedList merge_2_lists(LinkedList a, LinkedList b){
+    if (a.getHead() == NULL && b.getHead() == NULL) {
+        return a; // Return any of a or b.
+    }
+    if (b.getHead() == NULL) {
+        return a;
+    }
+    else if (a.getHead() == NULL){
+        return b;
+    }
+    
+    else {
+        Node* ins_after = a.getHead(); // Node in a after which we have to insert.
+        
+        while (b.getHead()) {
+            if (ins_after->getNext() == NULL) {
+                if (ins_after->getData() > b.getHead()->getData()) {
+                    Node* ins = b.popHeadNode();
+                    a.insert_Node_Before(ins_after, ins);
+                    continue;
+                }
+                a.insert_LL_After(ins_after, b);
+                b.setHead(NULL);
+                b.setTail(NULL);
+                
+            }
+            else {
+                while (ins_after) {
+                    if (b.getHead()->getData() > ins_after->getData()) {
+                        ins_after = ins_after->getNext();
+                    }
+                    else {
+                        break;
+                    }
+                }
+                
+                if (ins_after == NULL) {
+                    ins_after = a.getTail();
+                }
+                else {
+                    Node* ins = b.popHeadNode();
+                    if (ins_after->getData() > ins->getData()) {
+                        a.insert_Node_Before(ins_after, ins);
+                    }
+                    else {
+                        a.insert_Node_After(ins_after, ins);
+                    }
+                }
+            }
+        }
+    }
+    return a;
+}
+
+LinkedList merge_k_lists(LinkedList arr[N],int lastIndex){
+    while (lastIndex > 0) {
+        int i = 0;
+        int j = lastIndex;
+        
+        while (i<j) {
+            arr[i] = merge_2_lists(arr[i], arr[j]);
+            i++;
+            j--;
+        }
+        lastIndex /=2;
+    }
+    return arr[0];
+}
+
 int main(int argc, const char * argv[]) {
-    LinkedList list;
-    list.createLL();
-    list.printLL();
+    LinkedList arr[N];
+    
+    for (int i=0; i<N; i++) {
+        arr[i].createLL();
+    }
+    
+    LinkedList c = merge_k_lists(arr, N-1);
+    c.printLL();
 }
