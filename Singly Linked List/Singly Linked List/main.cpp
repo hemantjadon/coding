@@ -563,11 +563,34 @@ public:
         }
         return checkPalindrome_Recur(&head, head);
     }
+    
+    void removeDuplicates_sortedLL(){
+        Node* ptr1 = this->getHead();
+        Node* ptr2 = ptr1->getNext();
+        
+        while (ptr2) {
+            if (ptr2->getData() == ptr1->getData()) {
+                ptr1->setNext(ptr2->getNext());
+                delete ptr2;
+                ptr2 = ptr1->getNext();
+                this->decrementLength();
+            }
+            else {
+                ptr1 = ptr1->getNext();
+                ptr2 = ptr2->getNext();
+            }
+            
+            if (ptr2 == NULL) {
+                this->setTail(ptr1);
+            }
+        }
+    }
 };
 
 int main(int argc, const char * argv[]) {
     LinkedList list;
     list.createLL();
     list.printLL();
-    cout << list.checkPalindrome(list.getHead()) << endl;
+    list.removeDuplicates_sortedLL();
+    list.printLL();
 }
