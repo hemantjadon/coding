@@ -585,12 +585,49 @@ public:
             }
         }
     }
+    
+    LinkedList intersection_Iterative(LinkedList b){
+        LinkedList intersection;
+        Node* head_a = this->getHead();
+        Node* head_b = b.getHead();
+        
+        while (head_a && head_b) {
+            if (head_a->getData() == head_b->getData()) {
+                
+                Node* temp = new Node(head_a->getData());
+                
+                if (intersection.getHead() == NULL) {
+                    intersection.setHead(temp);
+                    intersection.setTail(temp);
+                }
+                else {
+                    intersection.getTail()->setNext(temp);
+                    intersection.setTail(temp);
+                }
+                intersection.incrementLength();
+                head_a = head_a->getNext();
+                head_b = head_b->getNext();
+            }
+            else if (head_a->getData() > head_b->getData()) {
+                head_b = head_b->getNext();
+            }
+            else {
+                head_a = head_a->getNext();
+            }
+            
+        }
+        
+        return intersection;
+    }
 };
 
 int main(int argc, const char * argv[]) {
     LinkedList list;
     list.createLL();
     list.printLL();
-    list.removeDuplicates_sortedLL();
-    list.printLL();
+    LinkedList list_b;
+    list_b.createLL();
+    list_b.printLL();
+    
+    list.intersection_Iterative(list_b).printLL();
 }
