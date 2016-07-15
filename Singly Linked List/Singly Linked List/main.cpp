@@ -800,12 +800,23 @@ public:
         
         skipMdeleteN(rest, m, n);
     }
+    
+    void pairwiseSwap(){
+        Node* curr = this->getHead();
+        Node* next = curr->getNext();
+        
+        while (next) {
+            this->swapNodes(curr, next);
+            curr = curr->getNext();
+            next = curr->getNext();
+        }
+    }
 };
 
 int main(int argc, const char * argv[]) {
     LinkedList list;
     list.createLL();
     list.printLL();
-    list.skipMdeleteN(list.getHead(), 3, 2);
+    list.pairwiseSwap();
     list.printLL();
 }
