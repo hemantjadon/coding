@@ -814,10 +814,26 @@ public:
     }
 };
 
+bool areLinkedListsIdentical(Node* head_a, Node* head_b){
+    if (head_a == NULL && head_b == NULL) {
+        return true;
+    }
+    if (head_a == NULL || head_b == NULL) {
+        return false;
+    }
+    
+    if (head_a->getData() == head_b->getData()) {
+        return areLinkedListsIdentical(head_a->getNext(),head_b->getNext());
+    }
+    return false;
+}
+
 int main(int argc, const char * argv[]) {
     LinkedList list;
     list.createLL();
     list.printLL();
-    list.pairwiseSwap();
-    list.printLL();
+    LinkedList list_b;
+    list_b.createLL();
+    list_b.printLL();
+    cout << areLinkedListsIdentical(list.getHead(), list_b.getHead()) << endl;
 }
