@@ -802,6 +802,7 @@ public:
     }
     
     void pairwiseSwap(){
+        // Pretty Easy If swapNodes() is implemented properly
         Node* curr = this->getHead();
         Node* next = curr->getNext();
         
