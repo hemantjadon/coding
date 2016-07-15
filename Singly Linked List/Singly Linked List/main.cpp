@@ -940,6 +940,43 @@ public:
             }
         }
     }
+    
+    void rearrangeInZigZagFashion(){
+        Node* curr = this->getHead();
+        Node* next = curr->getNext();
+        
+        if (curr == NULL || next == NULL) {
+            return;
+        }
+        
+        bool flag = 0;
+        
+        while (next) {
+            if (flag == 0) {
+                if (curr->getData() > next->getData()) {
+                    swapNodes(curr, next);
+                    
+                    // Reswapping
+                    Node* temp = curr;
+                    curr = next;
+                    next = temp;
+                }
+            }
+            if (flag == 1) {
+                if (curr->getData() < next->getData()) {
+                    swapNodes(curr, next);
+                    
+                    // Reswapping
+                    Node* temp = curr;
+                    curr = next;
+                    next = temp;
+                }
+            }
+            curr = next;
+            next = next->getNext();
+            flag = !flag;
+        }
+    }
 };
 
 bool areLinkedListsIdentical(Node* head_a, Node* head_b){
@@ -960,7 +997,6 @@ int main(int argc, const char * argv[]) {
     LinkedList list;
     list.createLL();
     list.printLL();
-    list.kReverse(3);
-    cout << "Head : " << list.getHead()->getData() << " Tail : "<< list.getTail()->getData() << endl;
+    list.rearrangeInZigZagFashion();
     list.printLL();
 }
