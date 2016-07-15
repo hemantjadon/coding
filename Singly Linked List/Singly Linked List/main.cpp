@@ -620,6 +620,39 @@ public:
         }
     }
     
+    Node* popNode(Node* ref){
+        if (this->getHead() == NULL) {
+            return NULL;
+        }
+        if (ref == this->getHead()) {
+            if (ref == this->getTail()) {
+                this->setHead(NULL);
+                this->setTail(NULL);
+                return ref;
+            }
+            else{
+                this->setHead(ref->getNext());
+                ref->setNext(NULL);
+                
+                return ref;
+            }
+        }
+        else if (ref == this->getTail()){
+            Node* ref_befNode = this->getPreviousNode(ref);
+            ref_befNode->setNext(NULL);
+            
+            return ref;
+        }
+        
+        else {
+            Node* ref_befNode = this->getPreviousNode(ref);
+            ref_befNode->setNext(ref->getNext());
+            ref->setNext(NULL);
+            
+            return ref;
+        }
+    }
+    
     void reverseIterative(){
         Node* head_1 = this->getHead();
         Node* tail_1 = this->getTail();
@@ -834,6 +867,33 @@ public:
         this->_deleteNodesWhichHaveGreaterValueOnRightSide_Recur(head_1, &tail_1);
     }
     
+    void segregateEvenAfterOdd(){
+        Node* head_1 = this->getHead();
+        Node* tail_1 = this->getTail();
+        if (head_1 == NULL) {
+            return;
+        }
+        while (head_1 != tail_1) {
+            if (head_1->getData()%2 != 0) {
+                Node* temp = head_1;
+                head_1 = head_1->getNext();
+                this->popNode(temp);
+                
+                this->getTail()->setNext(temp);
+                this->setTail(temp);
+            }
+            else {
+                head_1 = head_1->getNext();
+            }
+        }
+        
+        if (head_1->getData()%2 != 0) {
+            Node* temp = this->popNode(head_1);
+            
+            this->getTail()->setNext(temp);
+            this->setTail(temp);
+        }
+    }
     
 };
 
@@ -855,6 +915,6 @@ int main(int argc, const char * argv[]) {
     LinkedList list;
     list.createLL();
     list.printLL();
-    list.deleteNodesWhichHaveGreaterValueOnRightSide();
+    list.segregateEvenAfterOdd();
     list.printLL();
 }
