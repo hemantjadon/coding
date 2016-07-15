@@ -895,6 +895,51 @@ public:
         }
     }
     
+    void kReverse(int k){
+        Node* curr = this->getHead();
+        Node* prev = NULL;
+        Node* next = curr->getNext();
+        
+        Node* group_initial = curr;
+        Node* bef_group_initial = NULL;
+        
+        while (next) {
+            int k_1 = k;
+            
+            while (k_1 && next) {
+                k_1--;
+                curr->setNext(prev);
+                prev = curr;
+                curr = next;
+                next = next->getNext();
+            }
+            if (!k_1) {
+                if (bef_group_initial == NULL) {
+                    this->setHead(prev);
+                }
+                else {
+                    bef_group_initial->setNext(prev);
+                }
+                bef_group_initial = group_initial;
+                group_initial->setNext(curr);
+                prev = bef_group_initial;
+                group_initial = curr;
+            }
+            else {
+                if (bef_group_initial == NULL) {
+                    curr->setNext(prev);
+                    this->setHead(curr);
+                    this->setTail(group_initial);
+                }
+                else {
+                    curr->setNext(prev);
+                    bef_group_initial->setNext(curr);
+                    group_initial->setNext(NULL);
+                    this->setTail(group_initial);
+                }
+            }
+        }
+    }
 };
 
 bool areLinkedListsIdentical(Node* head_a, Node* head_b){
@@ -915,6 +960,7 @@ int main(int argc, const char * argv[]) {
     LinkedList list;
     list.createLL();
     list.printLL();
-    list.segregateEvenAfterOdd();
+    list.kReverse(3);
+    cout << "Head : " << list.getHead()->getData() << " Tail : "<< list.getTail()->getData() << endl;
     list.printLL();
 }
