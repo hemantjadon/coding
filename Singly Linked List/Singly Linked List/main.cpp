@@ -812,6 +812,25 @@ public:
             next = curr->getNext();
         }
     }
+    
+    void deleteNodesWhichHaveGreaterValueOnRightSide_Recur(Node* head,Node** maxNode){
+        if (head == NULL) {
+            return;
+        }
+        
+        deleteNodesWhichHaveGreaterValueOnRightSide_Recur(head->getNext(), maxNode);
+        if (head->getData() < (*maxNode)->getData() ) {
+            this->deleteNode(head);
+        }
+        else {
+            (*maxNode) = head;
+        }
+    }
+    void deleteNodesWhichHaveGreaterValueOnRightSide(){
+        Node* head_1 = this->getHead();
+        Node* tail_1 = this->getTail();
+        this->deleteNodesWhichHaveGreaterValueOnRightSide_Recur(head_1, &tail_1);
+    }
 };
 
 bool areLinkedListsIdentical(Node* head_a, Node* head_b){
@@ -832,8 +851,6 @@ int main(int argc, const char * argv[]) {
     LinkedList list;
     list.createLL();
     list.printLL();
-    LinkedList list_b;
-    list_b.createLL();
-    list_b.printLL();
-    cout << areLinkedListsIdentical(list.getHead(), list_b.getHead()) << endl;
+    list.deleteNodesWhichHaveGreaterValueOnRightSide();
+    list.printLL();
 }
