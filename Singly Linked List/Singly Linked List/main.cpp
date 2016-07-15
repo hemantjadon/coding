@@ -66,6 +66,12 @@ public:
     
     // Destructor
     ~LinkedList(){
+        Node* head_1 = this->head;
+        while (head_1) {
+            Node* befNode = head_1;
+            head_1 = head_1->getNext();
+            delete befNode;
+        }
         this->head = NULL;
         this->tail = NULL;
         this->length = 0;
@@ -283,13 +289,152 @@ public:
     }
     
     void deleteNode(Node* ref){
-        Node* befNode = this->getPreviousNode(ref);
+        if (this->getHead() == NULL || ref == NULL) {
+            return;
+        }
+        else if (this->getHead() == ref){
+            if (this->getHead() == this->getTail()) {
+                this->setHead(NULL);
+                this->setTail(NULL);
+                delete ref;
+            }
+            else {
+                this->setHead(ref->getNext());
+                delete ref;
+            }
+        }
         
-        befNode->setNext(ref->getNext());
-        ref->setNext(NULL);
-        
-        delete ref;
+        else if (this->getTail() == ref) {
+            Node* befNode = this->getPreviousNode(ref);
+            this->setTail(befNode);
+            befNode->setNext(NULL);
+            
+            delete ref;
+        }
+        else {
+            Node* befNode = this->getPreviousNode(ref);
+            befNode->setNext(ref->getNext());
+            
+            delete ref;
+        }
         this->decrementLength();
+    }
+    
+    void deletePartOfLL(Node* a,Node* b){
+        if (a == NULL && b == NULL) {
+            return;
+        }
+        else if (a == NULL){
+            b->setNext(NULL);
+            this->setTail(this->getPreviousNode(this->getTail()));
+            this->getTail()->setNext(NULL);
+        }
+        else if (b == NULL){
+            a->setNext(NULL);
+            this->setTail(this->getPreviousNode(this->getTail()));
+            this->getTail()->setNext(NULL);
+        }
+        else if(a == this->getHead()){
+            if (b == this->getTail()) {
+                delete this;
+            }
+            else {
+                this->setHead(b->getNext());
+                while (a != b && a != NULL) {
+                    Node* head_1 = a;
+                    a = a->getNext();
+                    delete head_1;
+                    this->decrementLength();
+                }
+                
+                if (a == b) {
+                    delete a;
+                    this->decrementLength();
+                }
+            }
+        }
+        else if (b == this->getHead()){
+            if (a == this->getTail()) {
+                delete this;
+            }
+            else {
+                this->setHead(a->getNext());
+                while (a != b && b != NULL) {
+                    Node* head_1 = b;
+                    b = b->getNext();
+                    delete head_1;\
+                    this->decrementLength();
+                }
+                if (a == b) {
+                    delete b;
+                    this->decrementLength();
+                }
+            }
+        }
+        
+        else if (b == this->getTail()){
+            Node* a_befNode = this->getPreviousNode(a);
+            this->setTail(a_befNode);
+            a_befNode->setNext(NULL);
+            
+            while (a != NULL) {
+                a_befNode = a;
+                a = a->getNext();
+                delete a_befNode;
+                this->decrementLength();
+            }
+        }
+        else if (b == this->getTail()) {
+            Node* b_befNode = this->getPreviousNode(b);
+            this->setTail(b_befNode);
+            b_befNode->setNext(NULL);
+
+            while (b != NULL) {
+                b_befNode = b;
+                b = b->getNext();
+                delete b_befNode;
+                this->decrementLength();
+            }
+        }
+        else {
+            Node* a_1 = a;
+            
+            while (a_1 != b && a_1 != NULL) {
+                a_1 = a_1->getNext();
+            }
+            
+            if (a_1 == b) {
+                Node* a_befNode = this->getPreviousNode(a);
+                a_befNode->setNext(b->getNext());
+                
+                while (a != b) {
+                    a_befNode = a;
+                    a = a->getNext();
+                    delete a_befNode;
+                    this->decrementLength();
+                }
+                if (a == b) {
+                    delete a;
+                    this->decrementLength();
+                }
+            }
+            else {
+                Node* b_befNode = this->getPreviousNode(b);
+                b_befNode->setNext(a->getNext());
+                
+                while (b != a) {
+                    b_befNode = b;
+                    b = b->getNext();
+                    delete b_befNode;
+                    this->decrementLength();
+                }
+                
+                if (a == b) {
+                    delete b;
+                    this->decrementLength();
+                }
+            }
+        }
     }
     
     void deleteAtKth(int k){
@@ -586,7 +731,7 @@ public:
         }
     }
     
-    LinkedList intersection_Iterative(LinkedList b){
+    LinkedList intersection_Iterative_Sorted(LinkedList b){
         LinkedList intersection;
         Node* head_a = this->getHead();
         Node* head_b = b.getHead();
@@ -619,15 +764,48 @@ public:
         
         return intersection;
     }
+    
+    void skipMdeleteN(Node* head,int m, int n){
+        Node* head_1 = head;
+        int m_1 = m;
+        int n_1 = n;
+        
+        while (m_1 > 0 && head_1 != NULL) {
+            head_1 = head_1->getNext();
+            m_1--;
+        }
+        
+        if (head_1 == NULL) {
+            return;
+        }
+        
+        Node* tail_1 = head_1;
+        
+        while (n_1 > 1 && tail_1) {
+            tail_1 = tail_1->getNext();
+            n_1--;
+        }
+        
+        Node* rest = NULL;
+        
+        if (tail_1) {
+            rest = tail_1->getNext(); // For next calling.
+        }
+        
+        this->deletePartOfLL(head_1, tail_1);
+        
+        if (rest == NULL) {
+            return;
+        }
+        
+        skipMdeleteN(rest, m, n);
+    }
 };
 
 int main(int argc, const char * argv[]) {
     LinkedList list;
     list.createLL();
     list.printLL();
-    LinkedList list_b;
-    list_b.createLL();
-    list_b.printLL();
-    
-    list.intersection_Iterative(list_b).printLL();
+    list.skipMdeleteN(list.getHead(), 3, 2);
+    list.printLL();
 }
