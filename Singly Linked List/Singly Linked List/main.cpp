@@ -686,7 +686,7 @@ public:
         this->setTail(first);
     }
     
-    bool checkPalindrome_Recur(Node** left,Node* right){
+private:bool checkPalindrome_Recur(Node** left,Node* right){
         if (right == NULL) {
             return true;
         }
@@ -702,6 +702,7 @@ public:
         
         return isPal_1;
     }
+public:
     bool checkPalindrome(Node* head){
         if (head == NULL) {
             return false;
@@ -813,12 +814,12 @@ public:
         }
     }
     
-    void deleteNodesWhichHaveGreaterValueOnRightSide_Recur(Node* head,Node** maxNode){
+private:void _deleteNodesWhichHaveGreaterValueOnRightSide_Recur(Node* head,Node** maxNode){
         if (head == NULL) {
             return;
         }
         
-        deleteNodesWhichHaveGreaterValueOnRightSide_Recur(head->getNext(), maxNode);
+        _deleteNodesWhichHaveGreaterValueOnRightSide_Recur(head->getNext(), maxNode);
         if (head->getData() < (*maxNode)->getData() ) {
             this->deleteNode(head);
         }
@@ -826,11 +827,14 @@ public:
             (*maxNode) = head;
         }
     }
+public:
     void deleteNodesWhichHaveGreaterValueOnRightSide(){
         Node* head_1 = this->getHead();
         Node* tail_1 = this->getTail();
-        this->deleteNodesWhichHaveGreaterValueOnRightSide_Recur(head_1, &tail_1);
+        this->_deleteNodesWhichHaveGreaterValueOnRightSide_Recur(head_1, &tail_1);
     }
+    
+    
 };
 
 bool areLinkedListsIdentical(Node* head_a, Node* head_b){
