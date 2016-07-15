@@ -977,6 +977,21 @@ public:
             flag = !flag;
         }
     }
+    
+    bool deleteLastOccurance(Node* head, int key){
+        if (head == NULL) {
+            return false;
+        }
+        
+        bool flag = deleteLastOccurance(head->getNext(), key);
+        if (!flag) {
+            if (head->getData() == key) {
+                this->deleteNode(head);
+                flag = true;
+            }
+        }
+        return flag;
+    }
 };
 
 bool areLinkedListsIdentical(Node* head_a, Node* head_b){
@@ -997,6 +1012,6 @@ int main(int argc, const char * argv[]) {
     LinkedList list;
     list.createLL();
     list.printLL();
-    list.rearrangeInZigZagFashion();
+    cout << list.deleteLastOccurance(list.getHead(), 5) << endl;
     list.printLL();
 }
