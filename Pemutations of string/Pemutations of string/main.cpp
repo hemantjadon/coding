@@ -10,11 +10,24 @@
 #include <string>
 using namespace std;
 
-void Permutations(string str){
+void Permutations(string str,int i,int j){
+    if (i > j) {
+        cout << str << endl;
+        return;
+    }
     
+    Permutations(str,i+1,j);
+    char ch = str[j];
+    str[j]=str[i];
+    str[i]=ch;
+    Permutations(str, i, j);
+    ch = str[j];
+    str[j]=str[i];
+    str[i]=ch;
 }
 
 int main(int argc, const char * argv[]) {
     string str;
     cin >> str;
+    Permutations(str,0,str.length()-1);
 }
