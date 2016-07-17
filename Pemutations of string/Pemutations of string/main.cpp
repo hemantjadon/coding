@@ -47,8 +47,8 @@ int Permutations(string str,int i=0){
                   data="a"          data="b"  (index = 1)
                  /       \          /      \
                 /         \        /        \
-               /           \      /          \
-       data="aa"      data="ab"  /            \
+         data="aa"     data="ab"  /          \
+                                 /            \
                              data="ba"       data="bb"   (index=2)
  */
 int Permutations_with_Repetetion(string str,int index=0,string data=""){
@@ -69,9 +69,42 @@ int Permutations_with_Repetetion(string str,int index=0,string data=""){
 }
 
 
+/**
+ * The basic code is quite same to the simple permutation.
+ * We just do not swap if the characters are same and continuethe loop.
+ */
+int Permutations_without_Duplicates(string str,int i=0){
+    int num=0;
+    if (i == str.length()) {
+        cout << str << endl;
+        return num+1;
+    }
+    
+    num += Permutations_without_Duplicates(str,i+1);
+    
+    for (int j=i; j<str.length(); j++) {
+        
+        if (str[i] == str[j]) {
+            continue;
+        }
+        
+        char ch = str[i];
+        str[i] = str[j];
+        str[j] = ch;
+        
+        num += Permutations_without_Duplicates(str,i+1);
+        
+        ch = str[i];
+        str[i] = str[j];
+        str[j] = ch;
+    }
+    return num;
+}
+
+
 int main(int argc, const char * argv[]) {
     string str;
     cin >> str;
     cout << "---" << endl;
-    cout << Permutations_with_Repetetion(str) << endl;
+    cout << Permutations_without_Duplicates(str) << endl;
 }
