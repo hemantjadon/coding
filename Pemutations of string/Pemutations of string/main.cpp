@@ -31,6 +31,26 @@ int Permutations(string str,int i=0){
     return num;
 }
 
+
+/**
+ * The Data String here is the key.
+ * The characters are added to this string in repetetive fashion.
+ * ie. initially the string is empty then in each iterations a character
+ * is added to the 'data' string cycling through the whole string.
+ * When the index reaches the length of string then it is printed.
+ * For : str= "ab" : Recursion stack will be :
+ *
+ *                         data=""   (index=0)
+                          /       \
+                         /         \
+                        /           \
+                  data="a"          data="b"  (index = 1)
+                 /       \          /      \
+                /         \        /        \
+               /           \      /          \
+       data="aa"      data="ab"  /            \
+                             data="ba"       data="bb"   (index=2)
+ */
 int Permutations_with_Repetetion(string str,int index=0,string data=""){
     int num=0;
     
