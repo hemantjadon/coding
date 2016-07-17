@@ -31,8 +31,27 @@ int Permutations(string str,int i=0){
     return num;
 }
 
+int Permutations_with_Repetetion(string str,int index=0,string data=""){
+    int num=0;
+    
+    if (index == str.length()) {
+        cout << data << endl;
+        return num+1;
+    }
+    
+    for (int i=0; i<str.length(); i++) {
+        string origData = data;
+        data += str[i];
+        num += Permutations_with_Repetetion(str,index+1,data);
+        data=origData;
+    }
+    return num;
+}
+
+
 int main(int argc, const char * argv[]) {
     string str;
     cin >> str;
-    cout << Permutations(str) << endl;
+    cout << "---" << endl;
+    cout << Permutations_with_Repetetion(str) << endl;
 }
