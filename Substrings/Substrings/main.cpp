@@ -10,24 +10,46 @@
 #include <string>
 using namespace std;
 
-void Substrings(string str, int i=0, int j=0, int diff=0){
-    if (j == str.length()) {
+void Substrings(string str, int i=0, int j=0){
+    if (i > str.length() || j > str.length()) {
         return;
     }
     
-    for (int k = i; k<=j; k++) {
+    for (int k=i; k<=j; k++) {
+        cout << str[k];
+    }
+    cout << endl;
+
+    if (j >= str.length()-1) {
+        Substrings(str,i+1,i+1);
+    }
+    else {
+        Substrings(str,i,j+1);
+    }
+
+}
+
+void Substrings_2(string str,int i=0 ,int j=0, int diff=0){
+    if (j >= str.length() || diff >= str.length()) {
+        return;
+    }
+    for (int k=i; k<=j; k++) {
         cout << str[k];
     }
     cout << endl;
     
-    Substrings(str,i+1,j+1,diff);
-    diff++;
-    i=0;
-    Substrings(str,i,i+diff,diff);
+    if (j>= str.length()-1) {
+        diff++;
+        i=0;
+        Substrings_2(str,i,i+diff,diff);
+    }
+    else{
+        Substrings_2(str,i+1,j+1,diff);
+    }
 }
 
 int main(int argc, const char * argv[]) {
     string str;
     cin >> str;
-    Substrings(str);
+    Substrings_2(str);
 }
