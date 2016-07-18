@@ -106,5 +106,5 @@ int main(int argc, const char * argv[]) {
     string str;
     cin >> str;
     cout << "---" << endl;
-    cout << Permutations_without_Duplicates(str) << endl;
+    cout << Permutations(str) << endl;
 }
