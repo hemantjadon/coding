@@ -8,6 +8,8 @@
 
 #include <iostream>
 #include <queue>
+#include <stack>
+#include <vector>
 using namespace std;
 
 class Node{
@@ -181,6 +183,23 @@ public:
         }
     }
     
+    // Construct Tree from traversals
+    
+    Node* Construct_from_PreOrder_and_InOrder(int preorder[],int inorder[],
+                                             int low,int high,int* pre_index){
+        if (low > high) {
+            return NULL;
+        }
+        
+        int in_index = __search(inorder, low, high, preorder[(*pre_index)]);
+        if (in_index == -1) {
+            return NULL;
+        }
+        (*pre_index)++;
+        Node* left = Construct_from_PreOrder_and_InOrder(preorder, inorder, low, in_index-1, pre_index);
+        Node* right = Construct_from_PreOrder_and_InOrder(preorder, inorder, in_index+1, high, pre_index);
+        return new Node(inorder[in_index],left,right);
+    }
     
     // Other Functions
     
@@ -274,6 +293,7 @@ public:
         levelSwap(root->getRight(), level, curr_level+1);
     }
     
+    
 private:
     
     // Auxilary Functions
@@ -284,6 +304,15 @@ private:
         else {
             return b;
         }
+    }
+    
+    int __search(int arr[],int low, int high,int el){
+        for (int i=low; i<=high; i++) {
+            if (arr[i] == el) {
+                return i;
+            }
+        }
+        return -1;
     }
 };
 
@@ -363,14 +392,128 @@ public:
     }
 };
 
+bool isIdentical(Node* root_1,Node* root_2){
+    if (root_1 == NULL && root_2 == NULL) {
+        return true;
+    }
+    
+    if (root_1 == NULL || root_2 == NULL) {
+        return false;
+    }
+    
+    if (root_1 -> getData() != root_2->getData()) {
+        return false;
+    }
+    
+    bool a = isIdentical(root_1->getLeft(), root_2->getLeft());
+    bool b = isIdentical(root_1->getRight(), root_2->getRight());
+    
+    if (a && b) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
 
 /**
-    Auxilary Trees 
+ * Auxilary Tree : This tree derives from BST and is used for non conventional functions.
+ * Eg. Traversals without recursion.
  */
+class AuxilaryTree : public BinarySearchTree {
+public:
+    void InOrderTraversal_withoutRecursion(Node* root){
+        if (root == NULL) {
+            return;
+        }
+        stack<Node*> stack;
+        
+        while (root || !stack.empty()) {
+            if (root) {
+                stack.push(root);
+                root = root->getLeft();
+            }
+            else {
+                root = stack.top();
+                stack.pop();
+                cout << root->getData() << " ";
+                root = root->getRight();
+            }
+        }
+    }
+    
+    void PreOrderTraversal_withoutRecursion(Node* root){
+        if (root == NULL) {
+            return;
+        }
+        
+        stack<Node*> stack;
+        
+        while (root || !stack.empty()) {
+            if (root) {
+                cout << root->getData() << " ";
+                stack.push(root);
+                root = root->getLeft();
+            }
+            else {
+                root = stack.top();
+                stack.pop();
+                root = root->getRight();
+            }
+        }
+    }
+    
+    /** 
+     * In-order Traversal without recursion and without stack 
+     * This algorithm uses property of Threaded Binary Tree
+     * that each nodes right child is its In-order Successor.
+     */
+    void MorrisTraversal(Node* root){
+        if (root == NULL) {
+            return;
+        }
+        
+        while (root != NULL) {
+            if (root->getLeft() == NULL) {
+                cout << root->getData() << " ";
+                root = root->getRight();
+            }
+            else {
+                //  Finding In order Predecssor of root.
+                //  Which is rightmost child of left subtree of root.
+                
+                Node* predecessor = root->getLeft();
+                while (predecessor->getRight() != NULL && predecessor->getRight() != root) {
+                    predecessor = predecessor->getRight();
+                }
+                
+                if (predecessor -> getRight() == NULL) {
+                    predecessor->setRight(root);
+                    root = root->getLeft();
+                }
+                
+                else {
+                    predecessor->setRight(NULL);
+                    cout << root->getData() << " ";
+                    root = root->getRight();
+                }
+            }
+        }
+    }
+};
 
 int main(int argc, const char * argv[]) {
-    BinarySearchTree tree;
-    tree.CreateBST();
-    tree.LeftView(tree.getRoot());
+    BinaryTree tree;
+    int preorder[] = {10,5,2,7,6,12,15,13};
+    int inorder[] = {2,5,6,7,10,12,13,15};
+    int pre_index=0;
+    int n = sizeof(inorder)/sizeof(int);
+    tree.setRoot(tree.Construct_from_PreOrder_and_InOrder(preorder, inorder, 0, n-1, &pre_index));
+    tree.InOrderTraversal(tree.getRoot());
+    cout << endl;
+    tree.PreOrderTraversal(tree.getRoot());
+    cout << endl;
+    tree.PostOrderTraversal(tree.getRoot());
+    cout << endl;
 }
 
