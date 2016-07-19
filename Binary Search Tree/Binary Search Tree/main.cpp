@@ -335,6 +335,21 @@ public:
         levelSwap(root->getRight(), level, curr_level+1);
     }
     
+    void printPathsToAllLeaves(Node* root,string path=""){
+        if (root == NULL) {
+            return;
+        }
+        
+        path += to_string(root->getData()) += " ";
+        
+        if (root->getLeft() == NULL && root->getRight() == NULL) {
+            cout << path << endl;
+            return;
+        }
+        
+        printPathsToAllLeaves(root->getLeft(),path);
+        printPathsToAllLeaves(root->getRight(),path);
+    }
     
 private:
     
@@ -460,7 +475,7 @@ bool isIdentical(Node* root_1,Node* root_2){
 
 /**
  * Auxilary Tree : This tree derives from BST and is used for non conventional functions.
- * Eg. Traversals without recursion.
+ * Eg. Traversals without recursion, MorrisTraversal
  */
 class AuxilaryTree : public BinarySearchTree {
 public:
@@ -545,16 +560,8 @@ public:
 };
 
 int main(int argc, const char * argv[]) {
-    BinaryTree tree;
-    int levelorder[] = {10,5,12,2,7,15,6,13};
-    int inorder[] = {2,5,6,7,10,12,13,15};
-    int n = sizeof(inorder)/sizeof(int);
-    tree.Construct_from_LevelOrder_and_InOrder(levelorder, inorder, n);
-    tree.InOrderTraversal(tree.getRoot());
-    cout << endl;
-    tree.PreOrderTraversal(tree.getRoot());
-    cout << endl;
-    tree.PostOrderTraversal(tree.getRoot());
-    cout << endl;
+    BinarySearchTree tree;
+    tree.CreateBST();
+    tree.printPathsToAllLeaves(tree.getRoot());
 }
 
