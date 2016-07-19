@@ -201,6 +201,48 @@ public:
         return new Node(inorder[in_index],left,right);
     }
     
+private:Node* Construct_from_LevelOrder_and_InOrder_Recur(vector<pair<int,bool>>
+                                                          levelorder,int inorder[],int low,int high){
+    if (low > high) {
+        return NULL;
+    }
+    
+    int in_index = -1;
+    for (int i=0; i<levelorder.size(); i++) {
+        if (levelorder[i].second == true) {
+            continue;
+        }
+        in_index = __search(inorder, low, high, levelorder[i].first);
+        if (in_index == -1) {
+            continue;
+        }
+        else {
+            levelorder[i].second = true;
+            break;
+        }
+    }
+    if (in_index == -1) {
+        return NULL;
+    }
+    
+    Node* left = Construct_from_LevelOrder_and_InOrder_Recur(levelorder, inorder, low, in_index-1);
+    Node* right =Construct_from_LevelOrder_and_InOrder_Recur(levelorder, inorder, in_index+1, high);
+    return new Node(inorder[in_index],left,right);
+}
+
+public:
+    void Construct_from_LevelOrder_and_InOrder(int levelorder[],int inorder[],int n){
+        
+        vector<pair<int, bool>> paired_array;
+        
+        for (int i=0; i<n; i++) {
+            pair<int,bool> joint(levelorder[i],false);
+            paired_array.push_back(joint);
+        }
+        
+        this->setRoot(Construct_from_LevelOrder_and_InOrder_Recur(paired_array, inorder, 0, n-1));
+    }
+    
     // Other Functions
     
     int size(Node* root){
@@ -504,11 +546,10 @@ public:
 
 int main(int argc, const char * argv[]) {
     BinaryTree tree;
-    int preorder[] = {10,5,2,7,6,12,15,13};
+    int levelorder[] = {10,5,12,2,7,15,6,13};
     int inorder[] = {2,5,6,7,10,12,13,15};
-    int pre_index=0;
     int n = sizeof(inorder)/sizeof(int);
-    tree.setRoot(tree.Construct_from_PreOrder_and_InOrder(preorder, inorder, 0, n-1, &pre_index));
+    tree.Construct_from_LevelOrder_and_InOrder(levelorder, inorder, n);
     tree.InOrderTraversal(tree.getRoot());
     cout << endl;
     tree.PreOrderTraversal(tree.getRoot());
