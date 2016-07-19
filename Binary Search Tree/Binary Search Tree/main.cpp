@@ -127,6 +127,38 @@ public:
         }
     }
     
+    void LeftView(Node* root){
+        if (root == NULL) {
+            return;
+        }
+        
+        queue<pair<Node*,int>> node_queue;
+        pair<Node*, int> joint (root,1);
+        node_queue.push(joint);
+        
+        int last_printed_level = 0;
+        
+        while (!node_queue.empty()) {
+            Node* p = node_queue.front().first;
+            int level = node_queue.front().second;
+            node_queue.pop();
+            
+            if (level != last_printed_level) {
+                cout << p->getData() << " ";
+                last_printed_level = level;
+            }
+            
+            if (p->getLeft()) {
+                pair<Node*, int> joint(p->getLeft(),level+1);
+                node_queue.push(joint);
+            }
+            if (p->getRight()) {
+                pair<Node*, int> joint(p->getRight(),level+1);
+                node_queue.push(joint);
+            }
+        }
+    }
+    
     void LevelOrderTraversal(Node* root){
         if (root == NULL) {
             return;
@@ -152,6 +184,58 @@ public:
     
     // Other Functions
     
+    int size(Node* root){
+        int s = 0;
+        if (root == NULL) {
+            return s;
+        }
+        s++;
+        s += size(root->getLeft());
+        s += size(root->getRight());
+        return s;
+    }
+    
+    Node* max(Node* root,Node* maxNode=NULL){
+        if (root == NULL) {
+            return maxNode;
+        }
+        
+        if (maxNode) {
+            if (maxNode->getData() < root->getData()) {
+                maxNode = root;
+            }
+        }
+        else {
+            maxNode = root;
+        }
+        
+        maxNode = max(root->getLeft(),maxNode);
+        maxNode = max(root->getRight(),maxNode);
+        
+        return maxNode;
+    }
+    
+    Node* min(Node* root,Node* minNode=NULL){
+        if (root == NULL) {
+            return minNode;
+        }
+        
+        if (minNode) {
+            if (minNode->getData() > root->getData()) {
+                minNode = root;
+            }
+        }
+        else {
+            minNode = root;
+        }
+        
+        minNode = min(root->getLeft(),minNode);
+        minNode = min(root->getRight(),minNode);
+        
+        return minNode;
+    }
+
+    
     int height(Node* root){
         
         if (root == NULL) {
@@ -161,6 +245,34 @@ public:
         return __max(height(root->getLeft()), height(root->getRight()))+1;
     }
     
+    void mirror(Node* root){
+        if (root == NULL) {
+            return;
+        }
+        
+        Node* temp = root->getLeft();
+        root->setLeft(root->getRight());
+        root->setRight(temp);
+        
+        mirror(root->getLeft());
+        mirror(root->getRight());
+    }
+    
+    void levelSwap(Node* root,int level,int curr_level=1){
+        if (root == NULL) {
+            return;
+        }
+        
+        if (level == curr_level) {
+            Node* temp = root->getLeft();
+            root->setLeft(root->getRight());
+            root->setRight(temp);
+            return;
+        }
+        
+        levelSwap(root->getLeft(), level, curr_level+1);
+        levelSwap(root->getRight(), level, curr_level+1);
+    }
     
 private:
     
@@ -251,18 +363,14 @@ public:
     }
 };
 
+
 /**
- * Binary Tree for Swap Algo Question of HackerRank.
+    Auxilary Trees 
  */
-class SwapAlgoBinaryTree : public BinaryTree{
-    
-};
 
 int main(int argc, const char * argv[]) {
     BinarySearchTree tree;
     tree.CreateBST();
-    tree.InOrderTraversal(tree.getRoot());
-    cout << endl;
-    tree.insert(tree.getRoot(), 5);
-    tree.InOrderTraversal(tree.getRoot());
+    tree.LeftView(tree.getRoot());
 }
+
