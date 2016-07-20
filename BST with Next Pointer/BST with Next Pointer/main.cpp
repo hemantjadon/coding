@@ -322,6 +322,25 @@ public:
         }
     }
     
+    void JoinLevelOrderNext_CompleteBinaryTree(Node* root){
+        if (root == NULL) {
+            return;
+        }
+        
+        if (root == this->getRoot()) {
+            root->setNext(NULL);
+        }
+        root->getLeft()->setNext(root->getRight());
+        if (root->getNext()) {
+            root->getRight()->setNext(root->getNext()->getLeft());
+        }
+        else {
+            root->getRight()->setNext(NULL);
+        }
+        
+        JoinLevelOrderNext_CompleteBinaryTree(root->getLeft());
+        JoinLevelOrderNext_CompleteBinaryTree(root->getRight());
+    }
 };
 
 int main(int argc, const char * argv[]) {
