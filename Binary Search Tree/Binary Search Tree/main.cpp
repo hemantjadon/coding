@@ -374,6 +374,22 @@ public:
         mirror(root->getRight());
     }
     
+    bool isStructuralMirror(Node* root_1,Node* root_2){
+        if (root_1 == NULL && root_2 == NULL) {
+            return true;
+        }
+        
+        if (root_1 == NULL || root_2 == NULL) {
+            return false;
+        }
+        
+        bool leftMirror = isStructuralMirror(root_1->getLeft(), root_2->getRight());
+        
+        bool rightMirror = isStructuralMirror(root_1->getRight(), root_2->getLeft());
+        
+        return (leftMirror && rightMirror);
+    }
+    
     void levelSwap(Node* root,int level,int curr_level=1){
         if (root == NULL) {
             return;
@@ -537,6 +553,27 @@ public:
         }
         
         return max;
+    }
+    
+    bool isFoldable(Node* root){
+        if (root == NULL) {
+            return true;
+        }
+        return isStructuralMirror(root->getLeft(), root->getRight());
+    }
+    
+    void nodesAtLevelK(Node* root,int k,int curr_level=1){
+        if (k == 0 || root == NULL) {
+            return;
+        }
+        
+        if (curr_level == k) {
+            cout << root->getData() << " ";
+            return;
+        }
+        
+        nodesAtLevelK(root->getLeft(), k, curr_level+1);
+        nodesAtLevelK(root->getRight(), k, curr_level+1);
     }
     
 private:
@@ -801,7 +838,5 @@ public:
 int main(int argc, const char * argv[]) {
     BinarySearchTree tree;
     tree.CreateBST();
-    cout << tree.width(tree.getRoot()) << endl;
-    
 }
 
