@@ -341,12 +341,54 @@ public:
         JoinLevelOrderNext_CompleteBinaryTree(root->getLeft());
         JoinLevelOrderNext_CompleteBinaryTree(root->getRight());
     }
+    
+    void JoinLevelOrderNext_ConstantSpace_Recursive(Node* root){
+        if (root == NULL) {
+            return;
+        }
+        
+        if (root == this->getRoot()) {
+            root->setNext(NULL);
+        }
+        
+        if (root->getLeft()) {
+            root->getLeft()->setNext(this->getNextNode(root, root->getLeft()));
+        }
+        if (root->getRight()) {
+            root->getLeft()->setNext(this->getNextNode(root, root->getLeft()));
+        }
+        
+        JoinLevelOrderNext_ConstantSpace_Recursive(root->getLeft());
+        JoinLevelOrderNext_ConstantSpace_Recursive(root->getRight());
+    }
+    
+private:
+    Node* getNextNode(Node* root,Node* forNode){
+        if (root == NULL) {
+            return NULL;
+        }
+        
+        while (root) {
+            if (root->getLeft()) {
+                if (root->getLeft() != forNode) {
+                    return root->getLeft();
+                }
+            }
+            if (root->getRight()) {
+                if (root->getRight() != forNode) {
+                    return root->getRight();
+                }
+            }
+            root = root->getNext();
+        }
+        return NULL;
+    }
 };
 
 int main(int argc, const char * argv[]) {
     BinarySearchTree tree;
     tree.CreateBST();
-    tree.JoinLevelOrderNext(tree.getRoot());
+    tree.JoinLevelOrderNext_ConstantSpace_Recursive(tree.getRoot());
     tree.InOrderTraversal(tree.getRoot());
     cout << endl;
 }
