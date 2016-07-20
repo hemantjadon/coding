@@ -675,6 +675,27 @@ public:
         return (leftPart && rightPart && (rootData == leftData+rightData));
     }
     
+    int ConvertToSumTree(Node* root){
+        if (root == NULL) {
+            return 0;
+        }
+        
+        if (root->getLeft() == NULL && root->getRight() == NULL) {
+            int value = root->getData();
+            root->setData(0);
+            return value;
+        }
+        
+        int leftValue = ConvertToSumTree(root->getLeft());
+        int rightValue = ConvertToSumTree(root->getRight());
+        
+        int rootData = root->getData();
+        
+        root->setData(leftValue + rightValue);
+        
+        return root->getData() + rootData;
+    }
+    
 private:
     
     // Auxilary Functions
@@ -943,9 +964,8 @@ public:
     }
 };
 
+
 int main(int argc, const char * argv[]) {
-    BinarySearchTree tree;
-    tree.CreateBST();
-    tree.printAncestors_Iterative(tree.getRoot(), 13);
+    
 }
 
