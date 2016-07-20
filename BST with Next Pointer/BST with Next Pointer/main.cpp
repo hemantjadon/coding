@@ -268,12 +268,27 @@ public:
             }
         }
     }
+    
+    void JoinNext_ReverseInorder(Node* root, Node** prev){
+        if (root == NULL) {
+            return;
+        }
+        
+        JoinNext_ReverseInorder(root->getRight(),prev);
+        
+        root->setNext(*(prev));
+        *(prev) = root;
+        
+        JoinNext_ReverseInorder(root->getLeft(),prev);
+        
+    }
 };
 
 int main(int argc, const char * argv[]) {
     BinarySearchTree tree;
     tree.CreateBST();
-    tree.JoinNext();
+    Node* prev = NULL;
+    tree.JoinNext_ReverseInorder(tree.getRoot(),&prev);
     tree.InOrderTraversal(tree.getRoot());
     cout << endl;
 }
