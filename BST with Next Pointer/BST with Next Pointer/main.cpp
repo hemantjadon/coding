@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <vector>
+#include <queue>
 #include <math.h>
 using namespace std;
 
@@ -233,7 +234,10 @@ public:
         }
     }
     
-    void JoinNext(Node* root){
+    /**
+     * Next Points to InOrder Successor
+     */
+    void JoinInOrderNext(Node* root){
         if (root == NULL) {
             return;
         }
@@ -255,30 +259,75 @@ public:
             LST_rightmost->setNext(root);
         }
         
-        JoinNext(root->getLeft());
-        JoinNext(root->getRight());
+        JoinInOrderNext(root->getLeft());
+        JoinInOrderNext(root->getRight());
     }
     
-    void JoinNext_ReverseInorder(Node* root, Node** prev){
+    void JoinInOrderNext_UsingReverseInorder(Node* root, Node** prev){
         if (root == NULL) {
             return;
         }
         
-        JoinNext_ReverseInorder(root->getRight(),prev);
+        JoinInOrderNext_UsingReverseInorder(root->getRight(),prev);
         
         root->setNext(*(prev));
         *(prev) = root;
         
-        JoinNext_ReverseInorder(root->getLeft(),prev);
+        JoinInOrderNext_UsingReverseInorder(root->getLeft(),prev);
         
     }
+    
+    
+    
+    /**
+     * Next Points to LevelOrder Successor
+     */
+    void JoinLevelOrderNext(Node* root){
+        if (root == NULL) {
+            return;
+        }
+        
+        queue<pair<Node*, int>> queue;
+        
+        pair<Node*, int> joint(root,1);
+        queue.push(joint);
+        
+        Node* prev = NULL;
+        int prev_level = 0;
+        
+        while (!queue.empty()) {
+            pair<Node*, int> ref = queue.front();
+            queue.pop();
+            
+            if (ref.second == prev_level) {
+                prev->setNext(ref.first);
+                prev = ref.first;
+            }
+            else {
+                if (prev) {
+                    prev->setNext(NULL);
+                }
+                prev = ref.first;
+                prev_level = ref.second;
+            }
+            
+            if (ref.first->getLeft()) {
+                pair<Node*, int> joint(ref.first->getLeft(),ref.second+1);
+                queue.push(joint);
+            }
+            if (ref.first->getRight()) {
+                pair<Node*, int> joint(ref.first->getRight(),ref.second+1);
+                queue.push(joint);
+            }
+        }
+    }
+    
 };
 
 int main(int argc, const char * argv[]) {
     BinarySearchTree tree;
     tree.CreateBST();
-    Node* prev = NULL;
-    tree.JoinNext(tree.getRoot());
+    tree.JoinLevelOrderNext(tree.getRoot());
     tree.InOrderTraversal(tree.getRoot());
     cout << endl;
 }
