@@ -300,10 +300,24 @@ public:
     int height(Node* root){
         
         if (root == NULL) {
-            return -1;
+            return 0;
         }
         
         return __max(height(root->getLeft()), height(root->getRight()))+1;
+    }
+    
+    int diameter(Node* root){
+        if (root == NULL) {
+            return 0;
+        }
+        
+        int leftHeight = height(root->getLeft());
+        int rightHeight = height(root->getRight());
+        
+        int leftDiameter = diameter(root->getLeft());
+        int rightDiameter = diameter(root->getRight());
+        
+        return __max(__max(leftDiameter,rightDiameter),leftHeight+rightHeight+1);
     }
     
     void mirror(Node* root){
@@ -350,6 +364,28 @@ public:
         printPathsToAllLeaves(root->getLeft(),path);
         printPathsToAllLeaves(root->getRight(),path);
     }
+    
+    bool childrenSumProperty(Node* root){
+        if (root == NULL || (root->getLeft() == NULL && root->getRight() == NULL)) {
+            return true;
+        }
+        
+        int leftData = 0;
+        int rightData = 0;
+        if (root->getLeft()) {
+            leftData = root->getLeft()->getData();
+        }
+        if (root -> getRight()) {
+            rightData = root->getRight()->getData();
+        }
+        
+        int rootData = root->getData();
+        
+        return ((leftData+rightData == rootData)
+                && childrenSumProperty(root->getLeft())
+                && childrenSumProperty(root->getRight()));
+    }
+    
     
 private:
     
@@ -446,6 +482,57 @@ public:
                 }
             }
         }
+    }
+    
+    Node* treeToList(Node* root){
+        if (root == NULL) {
+            return NULL;
+        }
+        
+        Node* leftList = treeToList(root->getLeft());
+        Node* rightList = treeToList(root->getRight());
+        
+        root->setLeft(root);
+        root->setRight(root);
+        
+        leftList = merge(leftList, root);
+        leftList = merge(leftList, rightList);
+        
+        return leftList;
+    }
+
+private:
+    Node* merge(Node* a,Node* b){
+        if (a == NULL && b == NULL) {
+            return NULL;
+        }
+        
+        else if (a == NULL){
+            return b;
+        }
+        
+        else if(b == NULL) {
+            return a;
+        }
+        
+        Node* a_1 = a;
+        Node* b_1 = b;
+        
+        while (a_1->getRight() != a) {
+            a_1 = a_1->getRight();
+        }
+        
+        while (b_1->getRight() != b) {
+            b_1 = b_1->getRight();
+        }
+        
+        a_1->setRight(b);
+        b->setLeft(a_1);
+        
+        a->setLeft(b_1);
+        b_1->setRight(a);
+        
+        return a;
     }
 };
 
@@ -562,6 +649,6 @@ public:
 int main(int argc, const char * argv[]) {
     BinarySearchTree tree;
     tree.CreateBST();
-    tree.printPathsToAllLeaves(tree.getRoot());
+    cout << tree.diameter(tree.getRoot());
 }
 
