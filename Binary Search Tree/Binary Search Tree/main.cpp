@@ -10,6 +10,7 @@
 #include <queue>
 #include <stack>
 #include <vector>
+#include <math.h>
 using namespace std;
 
 class Node{
@@ -76,6 +77,46 @@ public:
     Node* getRoot() const {
         return this->root;
     }
+    
+    
+    //  Creators
+    
+    void CreateTree(){
+        vector<vector<Node*>> matrix;
+        
+        int value = 0;
+        bool flag = false;
+        int i=0;
+        do {
+            flag = false;
+            vector<Node*> level;
+            for (int j=0; j<pow(2,i); j++) {
+                cin >> value;
+                if (value != -1) {
+                    flag = true;
+                    Node* temp = new Node(value);
+                    level.push_back(temp);
+                }
+                else{
+                    level.push_back(NULL);
+                }
+            }
+            matrix.push_back(level);
+            i++;
+        } while (flag);
+        
+        for (int x=0; x<matrix.size(); x++) {
+            for (int y=0; y<matrix[x].size(); y++) {
+                if (matrix[x][y] == NULL) {
+                    continue;
+                }
+                matrix[x][y]->setLeft(matrix[x+1][2*y]);
+                matrix[x][y]->setRight(matrix[x+1][2*y+1]);
+            }
+        }
+        this->setRoot(matrix[0][0]);
+    }
+    
     
     //  Traversals
     
@@ -386,6 +427,117 @@ public:
                 && childrenSumProperty(root->getRight()));
     }
     
+    void ConvertToTreeHavingChildrenSumProperty(Node* root){
+        if (root == NULL) {
+            return;
+        }
+        
+        ConvertToTreeHavingChildrenSumProperty(root->getLeft());
+        ConvertToTreeHavingChildrenSumProperty(root->getRight());
+        
+        bool isStable = childrenSumProperty(root);
+        if (isStable) {
+            return;
+        }
+        
+        else {
+            int diff = 0;
+            if (root->getLeft()) {
+                diff += root->getLeft()->getData();
+            }
+            if (root->getRight()) {
+                diff += root->getRight()->getData();
+            }
+            
+            diff -= root->getData();
+            
+            if (diff < 0) {
+                if (root->getLeft()) {
+                    int leftData = root->getLeft()->getData();
+                    int newLeftData = leftData + abs(diff);
+                    root->getLeft()->setData(newLeftData);
+                    ConvertToTreeHavingChildrenSumProperty(root->getLeft());
+                }
+                else {
+                    int rightData = root->getRight()->getData();
+                    int newRightData = rightData + abs(diff);
+                    root->getLeft()->setData(newRightData);
+                    ConvertToTreeHavingChildrenSumProperty(root->getRight());
+                }
+            }
+            else {
+                int rootData = root->getData();
+                int newRootData = rootData + abs(diff);
+                root->setData(newRootData);
+            }
+        }
+        
+    }
+    
+    bool isHeightBalanced(Node* root){
+        if (root == NULL) {
+            return true;
+        }
+        
+        bool leftSubtree_State = isHeightBalanced(root->getLeft());
+        bool rightSubtree_State = isHeightBalanced(root->getRight());
+        
+        int leftHeight = height(root->getLeft());
+        int rightHeight = height(root->getRight());
+        
+        return (leftSubtree_State
+                && rightSubtree_State
+                &&(abs(leftHeight - rightHeight) <= 1));
+    }
+    
+    void doubleTree(Node* root){
+        if (root == NULL) {
+            return;
+        }
+        
+        doubleTree(root->getLeft());
+        doubleTree(root->getRight());
+        
+        Node* temp = new Node(root->getData());
+        Node* root_left = root->getLeft();
+        root->setLeft(temp);
+        temp->setLeft(root_left);
+    }
+    
+private:
+    void width_Recur(Node* root,int level,int level_node_count[]){
+        if (root == NULL) {
+            return;
+        }
+        level_node_count[level]++;
+        width_Recur(root->getLeft(), level+1, level_node_count);
+        width_Recur(root->getRight(), level+1, level_node_count);
+    }
+    
+public:
+    int width(Node* root){
+        /**
+         * Can also do level order traversal and count the nodes then.
+         */
+        if (root == NULL) {
+            return 0;
+        }
+        int h = height(root);
+        int level_node_count[h];
+        for (int i=0; i<h; i++) {
+            level_node_count[i]=0;
+        }
+        width_Recur(root, 0, level_node_count);
+        
+        int max = 0;
+        for (int i=0; i<h; i++) {
+            if (level_node_count[i] > max) {
+                max = level_node_count[i];
+            }
+        }
+        
+        return max;
+    }
     
 private:
     
@@ -649,6 +801,7 @@ public:
 int main(int argc, const char * argv[]) {
     BinarySearchTree tree;
     tree.CreateBST();
-    cout << tree.diameter(tree.getRoot());
+    cout << tree.width(tree.getRoot()) << endl;
+    
 }
 
