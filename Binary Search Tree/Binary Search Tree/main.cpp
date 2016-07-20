@@ -225,6 +225,7 @@ public:
     }
     
     
+    
     // Construct Tree from traversals
     
     Node* Construct_from_PreOrder_and_InOrder(int preorder[],int inorder[],
@@ -243,7 +244,8 @@ public:
         return new Node(inorder[in_index],left,right);
     }
     
-private:Node* Construct_from_LevelOrder_and_InOrder_Recur(vector<pair<int,bool>>
+private:
+    Node* Construct_from_LevelOrder_and_InOrder_Recur(vector<pair<int,bool>>
                                                           levelorder,int inorder[],int low,int high){
     if (low > high) {
         return NULL;
@@ -284,6 +286,8 @@ public:
         
         this->setRoot(Construct_from_LevelOrder_and_InOrder_Recur(paired_array, inorder, 0, n-1));
     }
+    
+    
     
     // Other Functions
     
@@ -649,6 +653,28 @@ public:
         }
     }
     
+    bool isSumTree(Node* root){
+        if (root == NULL || (root->getLeft() == NULL && root->getRight() == NULL)) {
+            return true;
+        }
+        
+        bool leftPart = isSumTree(root->getLeft());
+        bool rightPart = isSumTree(root->getRight());
+        
+        int leftData = 0;
+        int rightData = 0;
+        int rootData = root->getData();
+        
+        if(root->getLeft()){
+            leftData = root->getLeft()->getData();
+        }
+        if (root->getRight()) {
+            rightData = root->getRight()->getData();
+        }
+        
+        return (leftPart && rightPart && (rootData == leftData+rightData));
+    }
+    
 private:
     
     // Auxilary Functions
@@ -671,6 +697,11 @@ private:
     }
 };
 
+
+
+/**
+ * BST : Binary Search Tree
+ */
 class BinarySearchTree : public BinaryTree{
 public:
     void CreateBST(){
@@ -798,6 +829,8 @@ private:
     }
 };
 
+
+
 bool isIdentical(Node* root_1,Node* root_2){
     if (root_1 == NULL && root_2 == NULL) {
         return true;
@@ -821,6 +854,8 @@ bool isIdentical(Node* root_1,Node* root_2){
         return false;
     }
 }
+
+
 
 /**
  * Auxilary Tree : This tree derives from BST and is used for non conventional functions.
