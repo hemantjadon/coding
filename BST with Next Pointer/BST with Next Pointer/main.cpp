@@ -233,40 +233,30 @@ public:
         }
     }
     
-    void JoinNext(){
-        Node* root = this->getRoot();
-        
+    void JoinNext(Node* root){
         if (root == NULL) {
             return;
         }
         
-        while (root != NULL) {
-            if (root->getLeft() == NULL) {
-                if (root->getNext() == NULL) {
-                    root->setNext(root->getRight());
-                }
-                root = root->getRight();
+        Node* RST_leftmost = root->getRight();
+        Node* LST_rightmost = root->getLeft();
+        
+        if (RST_leftmost) {
+            while (RST_leftmost->getLeft() != NULL) {
+                RST_leftmost = RST_leftmost->getLeft();
             }
-            else {
-                Node* predecessor = root->getLeft();
-                while (predecessor->getRight() != NULL && predecessor->getRight() !=root) {
-                    predecessor = predecessor->getRight();
-                }
-                
-                if (predecessor->getRight() == NULL) {
-                    predecessor->setNext(root);
-                    predecessor->setRight(root);
-                    root = root->getLeft();
-                }
-                else {
-                    predecessor->setRight(NULL);
-                    if (root->getNext() == NULL) {
-                        root->setNext(root->getRight());
-                    }
-                    root = root->getRight();
-                }
-            }
+            root->setNext(RST_leftmost);
         }
+        
+        if (LST_rightmost) {
+            while (LST_rightmost->getRight() != NULL) {
+                LST_rightmost = LST_rightmost->getRight();
+            }
+            LST_rightmost->setNext(root);
+        }
+        
+        JoinNext(root->getLeft());
+        JoinNext(root->getRight());
     }
     
     void JoinNext_ReverseInorder(Node* root, Node** prev){
@@ -288,7 +278,7 @@ int main(int argc, const char * argv[]) {
     BinarySearchTree tree;
     tree.CreateBST();
     Node* prev = NULL;
-    tree.JoinNext_ReverseInorder(tree.getRoot(),&prev);
+    tree.JoinNext(tree.getRoot());
     tree.InOrderTraversal(tree.getRoot());
     cout << endl;
 }
