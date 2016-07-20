@@ -224,6 +224,7 @@ public:
         }
     }
     
+    
     // Construct Tree from traversals
     
     Node* Construct_from_PreOrder_and_InOrder(int preorder[],int inorder[],
@@ -576,6 +577,78 @@ public:
         nodesAtLevelK(root->getRight(), k, curr_level+1);
     }
     
+    bool printAncestors_Recursive(Node* root,int el){
+        if (root == NULL) {
+            return false;
+        }
+        
+        if (root->getData() == el) {
+            return true;
+        }
+        
+        bool el_in_left = printAncestors_Recursive(root->getLeft(), el);
+        bool el_in_right = printAncestors_Recursive(root->getRight(), el);
+        
+        if (el_in_left || el_in_right) {
+            cout << root->getData() << " ";
+            return true;
+        }
+        
+        return false;
+    }
+    
+    void printAncestors_Iterative(Node* root, int el){
+        if (root == NULL) {
+            return;
+        }
+        
+        stack<Node*> stack;
+        
+        while (root || !stack.empty()) {
+            if (root) {
+                if (root->getData() == el) {
+                    while (!stack.empty()) {
+                        root = stack.top();
+                        stack.pop();
+                        cout << root->getData() << " ";
+                    }
+                    root = NULL;
+                }
+                else {
+                    stack.push(root);
+                    root = root->getLeft();
+                }
+            }
+            else {
+                root = stack.top();
+                if (root->getData() == el) {
+                    while (!stack.empty()) {
+                        root = stack.top();
+                        stack.pop();
+                        cout << root->getData() << " ";
+                    }
+                    root = NULL;
+                }
+                else {
+                    if (root->getRight() == NULL) {
+                        stack.pop();
+                        Node* ref = root;
+                        
+                        while (!stack.empty() && stack.top()->getRight() == ref) {
+                            ref = stack.top();
+                            stack.pop();
+                        }
+                        
+                        root =NULL;
+                    }
+                    else {
+                        root = root->getRight();
+                    }
+                }
+            }
+        }
+    }
+    
 private:
     
     // Auxilary Functions
@@ -838,5 +911,6 @@ public:
 int main(int argc, const char * argv[]) {
     BinarySearchTree tree;
     tree.CreateBST();
+    tree.printAncestors_Iterative(tree.getRoot(), 13);
 }
 
