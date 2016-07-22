@@ -1108,6 +1108,44 @@ public:
         }
     }
     
+    void PostOrderTraversal_withoutRecursion(Node* root){
+        if (root == NULL) {
+            return;
+        }
+        
+        stack<Node*> ST;
+        
+        while (root || !ST.empty()) {
+            if (root) {
+                if (root->getRight()) {
+                    ST.push(root->getRight());
+                    ST.push(root);
+                    root = root->getLeft();
+                }
+                else {
+                    ST.push(root);
+                    root = root->getLeft();
+                }
+            }
+            else {
+                root = ST.top();
+                ST.pop();
+                
+                Node* ref = ST.empty() ? NULL : ST.top();
+                
+                if (root->getRight() && root->getRight() == ref) {
+                    ST.pop();
+                    ST.push(root);
+                    root = root->getRight();
+                }
+                else{
+                    cout << root->getData() << " ";
+                    root = NULL;
+                }
+            }
+        }
+    }
+    
     /** 
      * In-order Traversal without recursion and without stack 
      * This algorithm uses property of Threaded Binary Tree
@@ -1149,13 +1187,13 @@ public:
 
 
 int main(int argc, const char * argv[]) {
-    BinaryTree tree;
+    AuxilaryTree tree;
     int preorder[] = {1, 2, 4, 8, 9, 5, 3, 6, 7};
     int postorder[] = {8, 9, 4, 5, 2, 6, 7, 3, 1};
     int n = sizeof(preorder)/sizeof(int);
     int preindex=0;
     tree.setRoot(tree.ConstructFullBinaryTree_from_PreOrder_and_PostOrder(preorder, postorder, 0, n-1, &preindex));
     
-    tree.ReverseLevelOrderTraversal(tree.getRoot());
+    tree.PostOrderTraversal_withoutRecursion(tree.getRoot());
 }
 
