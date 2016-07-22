@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <vector>
+#include <queue>
 using namespace std;
 
 class Label{
@@ -29,142 +30,153 @@ public:
 
 namespace Graph {
     
-    class Graph{
+    class Edge;     //  Forward Declaration of class Edge.
+    
+    class Vertex{
     private:
+        bool visited;
+        Label* label;
         
-        class Edge;     //  Forward Declaration of class Edge.
+        vector<Edge*> OutEdges;
+        vector<Edge*> InEdges;
         
-        class Vertex{
-        private:
-            bool visited;
-            Label* label;
-            
-            vector<Edge*> OutEdges;
-            vector<Edge*> InEdges;
-            
-        public:
-            
-            //  Constructor
-            Vertex(Label* label):visited(false),label(label)
-            {}
-            
-            
-            //  Getters
-            bool isVisited() const {
-                return this->visited;
-            }
-            
-            Label* getLabel() const {
-                return this->label;
-            }
-            
-            vector<Edge*> OutgoingEdges() const {
-                return this->OutEdges;
-            }
-            
-            vector<Edge*> IncomingEdges() const {
-                return this->InEdges;
-            }
-            
-            
-            //  Setters
-            void setVisited(bool visited){
-                this->visited = visited;
-            }
-            
-            
-            //  Visit Changers
-            void visit(){
-                this->visited = true;
-            }
-            
-            void unvisit(){
-                this->visited = false;
-            }
-            
-            void toggleVisited(){
-                this->visited = !this->visited;
-            }
-            
-            
-            // Functions
-            void addIncomingEdge(Edge* edge){
-                this->InEdges.push_back(edge);
-            }
-            
-            void addOutgoingEdge(Edge* edge){
-                this->OutEdges.push_back(edge);
-            }
-            
-            bool removeIncomingEdge(Edge* edge){
-                for (int i=0; i<InEdges.size(); i++) {
-                    if (InEdges[i] == edge) {
-                        InEdges.erase(InEdges.begin() + i);
-                        return true;
-                    }
+    public:
+        
+        //  Constructor
+        Vertex(Label* label):visited(false),label(label)
+        {}
+        
+        
+        //  Getters
+        bool isVisited() const {
+            return this->visited;
+        }
+        
+        Label* getLabel() const {
+            return this->label;
+        }
+        
+        vector<Edge*> OutgoingEdges() const {
+            return this->OutEdges;
+        }
+        
+        vector<Edge*> IncomingEdges() const {
+            return this->InEdges;
+        }
+        
+        
+        //  Setters
+        void setVisited(bool visited){
+            this->visited = visited;
+        }
+        
+        
+        //  Visit Changers
+        void visit(){
+            this->visited = true;
+        }
+        
+        void unvisit(){
+            this->visited = false;
+        }
+        
+        void toggleVisited(){
+            this->visited = !this->visited;
+        }
+        
+        
+        // Functions
+        void addIncomingEdge(Edge* edge){
+            this->InEdges.push_back(edge);
+        }
+        
+        void addOutgoingEdge(Edge* edge){
+            this->OutEdges.push_back(edge);
+        }
+        
+        bool removeIncomingEdge(Edge* edge){
+            for (int i=0; i<InEdges.size(); i++) {
+                if (InEdges[i] == edge) {
+                    InEdges.erase(InEdges.begin() + i);
+                    return true;
                 }
-                return false;
             }
-            
-            bool removeOutgoingEdge(Edge* edge){
-                for (int i=0; i<OutEdges.size(); i++) {
-                    if (OutEdges[i] == edge) {
-                        OutEdges.erase(OutEdges.begin() + i);
-                        return true;
-                    }
-                }
-                return false;
-            }
-            
-            long OutDeg(){
-                return OutEdges.size();
-            }
-            
-            long InDeg(){
-                return InEdges.size();
-            }
-        };
+            return false;
+        }
         
-        class Edge{
-        private:
-            static int INDEX;
-            int weight;
-            const Vertex* vertex1;
-            const Vertex* vertex2;
-            
-        public:
-            //  Constructor
-            Edge(Vertex* vertex1,Vertex* vertex2,int weight=1):
-            weight(weight),vertex1(vertex1),vertex2(vertex2)
-            {}
-            
-            //  Setters
-            void setWeight(int weight){
-                this->weight = weight;
+        bool removeOutgoingEdge(Edge* edge){
+            for (int i=0; i<OutEdges.size(); i++) {
+                if (OutEdges[i] == edge) {
+                    OutEdges.erase(OutEdges.begin() + i);
+                    return true;
+                }
             }
-            
-            //  Getters
-            int getWeight() const {
-                return this->weight;
+            return false;
+        }
+        
+        long OutDeg(){
+            return OutEdges.size();
+        }
+        
+        long InDeg(){
+            return InEdges.size();
+        }
+    };
+    
+    class Edge{
+    private:
+        static int INDEX;
+        int weight;
+        const Vertex* vertex1;
+        const Vertex* vertex2;
+        
+    public:
+        //  Constructor
+        Edge(Vertex* vertex1,Vertex* vertex2,int weight=1):
+        weight(weight),vertex1(vertex1),vertex2(vertex2)
+        {}
+        
+        //  Setters
+        void setWeight(int weight){
+            this->weight = weight;
+        }
+        
+        //  Getters
+        int getWeight() const {
+            return this->weight;
+        }
+        
+        const Vertex* getVertex1() const {
+            return vertex1;
+        }
+        
+        const Vertex* getVertex2() const {
+            return vertex2;
+        }
+        
+        const Vertex* getOtherVertex(Vertex* vertex) const {
+            if (this->getVertex1() == vertex) {
+                return this->getVertex2();
             }
-            
-            const Vertex* getVertex1() const {
-                return vertex1;
+            else if(this->getVertex2() == vertex) {
+                return this->getVertex1();
             }
-            
-            const Vertex* getVertex2() const {
-                return vertex2;
+            else {
+                return NULL;
             }
-        };
+        }
+    };
+    
+    class BasicGraph{
+    private:
         
         const bool DIRECTED;
         
-        
+    public:
         vector<Vertex*> VertexSet;
         vector<Edge*> EdgeSet;
         
-    public:
-        Graph(bool DIRECTED=false):DIRECTED(DIRECTED)
+        BasicGraph(bool DIRECTED=false):DIRECTED(DIRECTED)
         {}
         
         bool isDirected(){
@@ -443,23 +455,57 @@ namespace Graph {
         
         void Clear(){
             while (VertexSet.size()) {
-                DeleteVertex(VertexSet[0]);
+                DeleteVertex(VertexSet[0],true);
             }
         }
         
         void ClearEdges(){
             while (EdgeSet.size()) {
-                DeleteEdge(EdgeSet[0]);
+                DeleteEdge(EdgeSet[0],true);
+            }
+        }
+    };
+    
+    class GraphAlgorithms : public BasicGraph{
+    public:
+        GraphAlgorithms(bool DIRECTED=false):BasicGraph(DIRECTED)
+        {}
+        
+        void BFS(Vertex* vertex){
+            if (vertex == NULL) {
+                return;
+            }
+            vertex->visit();
+            cout << vertex->getLabel()->getData() << " ";   //  Visiting the Source Vertex
+            queue<Vertex*> queue;
+            queue.push(vertex);
+            
+            while (!queue.empty()) {
+                Vertex* v = queue.front();
+                
+                queue.pop();
+                
+                vector<Edge*> out_edges = v->OutgoingEdges();
+                
+                for (long i=0; i<out_edges.size(); i++) {
+                    const Vertex* neighbour = out_edges[i]->getOtherVertex(v);
+                    if (neighbour->isVisited()) {
+                        continue;
+                    }
+                    Vertex* vert = ContainsVertex(neighbour);
+                    vert->visit();
+                    cout << vert->getLabel()->getData() << " "; //  Visiting other vertices
+                    queue.push(vert);
+                }
             }
         }
         
-    };
+        };
+
 }
 
-
-
 int main(int argc, const char * argv[]) {
-    Graph::Graph g(false);
+    Graph::GraphAlgorithms g(false);
     g.AddVertex(1);
     g.AddVertex(2);
     g.AddVertex(3);
@@ -472,5 +518,5 @@ int main(int argc, const char * argv[]) {
     g.AddEdge(5, 1);
     g.AddEdge(1, 3);
     g.AddEdge(2, 4);
-    g.ClearEdges();
+    g.BFS(g.ContainsVertex(1));
 }
