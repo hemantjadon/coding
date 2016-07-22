@@ -10,6 +10,7 @@
 #include <queue>
 #include <stack>
 #include <vector>
+#include <map>
 #include <math.h>
 using namespace std;
 
@@ -225,8 +226,38 @@ public:
     }
     
     
+private:
+    void VerticalOrderTraversal_Recur(Node* root,map<int, vector<Node*>> &map,int hd=0){
+        if (root == NULL) {
+            return;
+        }
+        
+        map[hd].push_back(root);
+        
+        VerticalOrderTraversal_Recur(root->getLeft(), map, hd+1);
+        VerticalOrderTraversal_Recur(root->getRight(), map, hd-1);
+    }
+public:
+    void VerticalOrderTraversal(Node* root){
+        map<int , vector<Node*>> m;
+        
+        VerticalOrderTraversal_Recur(root, m);
+        
+        map<int, vector<Node*>>::reverse_iterator it;
+        
+        for (it = m.rbegin(); it != m.rend(); it++) {
+            vector<Node*>::iterator v_it;
+            
+            for (v_it = it->second.begin(); v_it != it->second.end(); v_it++) {
+                cout << (*v_it)->getData() << " ";
+            }
+            cout << endl;
+        }
+    }
+    
     
     // Construct Tree from traversals
+
     
     Node* Construct_from_PreOrder_and_InOrder(int preorder[],int inorder[],
                                              int low,int high,int* pre_index){
@@ -243,36 +274,35 @@ public:
         Node* right = Construct_from_PreOrder_and_InOrder(preorder, inorder, in_index+1, high, pre_index);
         return new Node(inorder[in_index],left,right);
     }
-    
 private:
     Node* Construct_from_LevelOrder_and_InOrder_Recur(vector<pair<int,bool>>
-                                                          levelorder,int inorder[],int low,int high){
-    if (low > high) {
-        return NULL;
-    }
-    
-    int in_index = -1;
-    for (int i=0; i<levelorder.size(); i++) {
-        if (levelorder[i].second == true) {
-            continue;
+                                                      levelorder,int inorder[],int low,int high){
+        if (low > high) {
+            return NULL;
         }
-        in_index = __search(inorder, low, high, levelorder[i].first);
+        
+        int in_index = -1;
+        for (int i=0; i<levelorder.size(); i++) {
+            if (levelorder[i].second == true) {
+                continue;
+            }
+            in_index = __search(inorder, low, high, levelorder[i].first);
+            if (in_index == -1) {
+                continue;
+            }
+            else {
+                levelorder[i].second = true;
+                break;
+            }
+        }
         if (in_index == -1) {
-            continue;
+            return NULL;
         }
-        else {
-            levelorder[i].second = true;
-            break;
-        }
+        
+        Node* left = Construct_from_LevelOrder_and_InOrder_Recur(levelorder, inorder, low, in_index-1);
+        Node* right =Construct_from_LevelOrder_and_InOrder_Recur(levelorder, inorder, in_index+1, high);
+        return new Node(inorder[in_index],left,right);
     }
-    if (in_index == -1) {
-        return NULL;
-    }
-    
-    Node* left = Construct_from_LevelOrder_and_InOrder_Recur(levelorder, inorder, low, in_index-1);
-    Node* right =Construct_from_LevelOrder_and_InOrder_Recur(levelorder, inorder, in_index+1, high);
-    return new Node(inorder[in_index],left,right);
-}
 
 public:
     void Construct_from_LevelOrder_and_InOrder(int levelorder[],int inorder[],int n){
@@ -287,7 +317,66 @@ public:
         this->setRoot(Construct_from_LevelOrder_and_InOrder_Recur(paired_array, inorder, 0, n-1));
     }
     
+    Node* ConstructSpecial_fromInOrder(int inorder[],int low,int high){
+        if (low > high) {
+            return NULL;
+        }
+        
+        int max_index = __max_in_array(inorder, low, high);
+        
+        Node* root = new Node(inorder[max_index]);
+        
+        Node* leftChild = ConstructSpecial_fromInOrder(inorder, low, max_index-1);
+        
+        Node* rightChild = ConstructSpecial_fromInOrder(inorder, max_index+1, high);
+        
+        root->setLeft(leftChild);
+        root->setRight(rightChild);
+        
+        return root;
+    }
     
+    Node* ConstructSpecial_from_PreOrder(int pre[],char preLN[],int n,int* preindex){
+        
+        Node* root = new Node(pre[(*preindex)]);
+        
+        if (preLN[(*preindex)] == 'L') {
+            return root;
+        }
+        
+        (*preindex)++;
+        Node* leftChild = ConstructSpecial_from_PreOrder(pre, preLN, n, preindex);
+        (*preindex)++;
+        Node* rightChild = ConstructSpecial_from_PreOrder(pre, preLN, n,preindex);
+        
+        root->setLeft(leftChild);
+        root->setRight(rightChild);
+        
+        return root;
+    }
+    
+    Node* ConstructFullBinaryTree_from_PreOrder_and_PostOrder(int preorder[],int postorder[],int low,int high,int* preindex){
+        
+        if (low > high) {
+            return NULL;
+        }
+        
+        Node* root = new Node(postorder[high]);
+        (*preindex)++;
+        
+        int index = __search(postorder, low, high-1, preorder[(*preindex)]);
+        
+        if (index == -1) {
+            return root;
+        }
+        
+        Node* left = ConstructFullBinaryTree_from_PreOrder_and_PostOrder(preorder, postorder, low, index, preindex);
+        Node* right = ConstructFullBinaryTree_from_PreOrder_and_PostOrder(preorder, postorder, index+1, high-1, preindex);
+        
+        root->setLeft(left);
+        root->setRight(right);
+        return root;
+    }
     
     // Other Functions
     
@@ -697,6 +786,58 @@ public:
     }
     
 private:
+    void maximumSumPath_FindPath_Recur(Node* root,int* max_sum,Node** leaf_ref,int curr_sum=0){
+        if (root == NULL) {
+            return;
+        }
+        
+        
+        curr_sum = curr_sum + root->getData();
+        if ((*max_sum) < curr_sum) {
+            if (root->getLeft() == NULL && root->getRight() == NULL) {
+                (*max_sum) = curr_sum;
+                (*leaf_ref) = root;
+            }
+        }
+        maximumSumPath_FindPath_Recur(root->getLeft(), max_sum ,leaf_ref);
+        maximumSumPath_FindPath_Recur(root->getRight(), max_sum ,leaf_ref);
+        
+    }
+    
+    void printPath(Node* root, Node* leaf_ref, string path=""){
+        if (root == NULL) {
+            return;
+        }
+        if (root->getLeft() == NULL && root->getRight() == NULL) {
+            if (root == leaf_ref) {
+                cout << path << endl;
+                return;
+            }
+            else {
+                return;
+            }
+        }
+        
+        path += to_string(root->getData());
+        path += " ";
+        
+        printPath(root->getLeft(), leaf_ref, path);
+        printPath(root->getRight(), leaf_ref, path);
+    }
+    
+public:
+    void maximumSumPath(Node* root){
+        int max_sum = INT_MIN;
+        
+        Node* leaf_ref = NULL;
+        maximumSumPath_FindPath_Recur(root, &max_sum, &leaf_ref);
+        
+        printPath(root, leaf_ref);
+        
+        cout << max_sum << endl;
+    }
+    
+private:
     
     // Auxilary Functions
     int __max(int a,int b){
@@ -715,6 +856,19 @@ private:
             }
         }
         return -1;
+    }
+    
+    int __max_in_array(int arr[], int low, int high){
+        int max = INT_MIN;
+        int max_index = -1;
+        
+        for (int i = low; i<=high; i++) {
+            if (arr[i] > max) {
+                max = arr[i];
+                max_index = i;
+            }
+        }
+        return max_index;
     }
 };
 
@@ -966,6 +1120,11 @@ public:
 
 
 int main(int argc, const char * argv[]) {
-    
+    BinaryTree tree;
+    int preorder[] = {1, 2, 4, 8, 9, 5, 3, 6, 7};
+    int postorder[] = {8, 9, 4, 5, 2, 6, 7, 3, 1};
+    int n = sizeof(preorder)/sizeof(int);
+    int preindex=0;
+    tree.setRoot(tree.ConstructFullBinaryTree_from_PreOrder_and_PostOrder(preorder, postorder, 0, n-1, &preindex));
 }
 
