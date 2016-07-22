@@ -225,7 +225,6 @@ public:
         }
     }
     
-    
 private:
     void VerticalOrderTraversal_Recur(Node* root,map<int, vector<Node*>> &map,int hd=0){
         if (root == NULL) {
@@ -252,6 +251,36 @@ public:
                 cout << (*v_it)->getData() << " ";
             }
             cout << endl;
+        }
+    }
+    
+    void ReverseLevelOrderTraversal(Node* root){
+        if (root == NULL) {
+            return;
+        }
+        
+        queue<Node*> Q;
+        stack<Node*> ST;
+        
+        Q.push(root);
+        
+        while (!Q.empty()) {
+            Node* ref = Q.front();
+            Q.pop();
+            
+            cout << ref->getData() << " ";
+            
+            if (ref->getLeft()) {
+                ST.push(ref->getLeft());
+            }
+            if (ref->getRight()) {
+                ST.push(ref->getRight());
+            }
+            
+            while (!ST.empty()) {
+                Q.push(ST.top());
+                ST.pop();
+            }
         }
     }
     
@@ -1126,5 +1155,7 @@ int main(int argc, const char * argv[]) {
     int n = sizeof(preorder)/sizeof(int);
     int preindex=0;
     tree.setRoot(tree.ConstructFullBinaryTree_from_PreOrder_and_PostOrder(preorder, postorder, 0, n-1, &preindex));
+    
+    tree.ReverseLevelOrderTraversal(tree.getRoot());
 }
 
