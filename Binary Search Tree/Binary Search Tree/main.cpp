@@ -407,6 +407,29 @@ public:
         return root;
     }
     
+    Node* ConstructBinaryTree_from_Parent_Array(int parent[],int n,bool visited[],int toFind = -1){
+        int i;
+        for (i=0; i<n; i++) {
+            if (parent[i] == toFind && visited[i] == false) {
+                visited[i] = true;
+                break;
+            }
+        }
+        if (i == n) {
+            return NULL;
+        }
+        
+        Node* root = new Node(i);
+        
+        Node* leftChild = ConstructBinaryTree_from_Parent_Array(parent, n, visited, i);
+        Node* rightChild = ConstructBinaryTree_from_Parent_Array(parent, n, visited, i);
+        
+        root->setLeft(leftChild);
+        root->setRight(rightChild);
+        
+        return root;
+    }
+    
     // Other Functions
     
     int size(Node* root){
@@ -1187,13 +1210,10 @@ public:
 
 
 int main(int argc, const char * argv[]) {
-    AuxilaryTree tree;
-    int preorder[] = {1, 2, 4, 8, 9, 5, 3, 6, 7};
-    int postorder[] = {8, 9, 4, 5, 2, 6, 7, 3, 1};
-    int n = sizeof(preorder)/sizeof(int);
-    int preindex=0;
-    tree.setRoot(tree.ConstructFullBinaryTree_from_PreOrder_and_PostOrder(preorder, postorder, 0, n-1, &preindex));
-    
-    tree.PostOrderTraversal_withoutRecursion(tree.getRoot());
+    BinaryTree tree;
+    int parent[] = {1, 5, 5, 2, 2, -1, 3};
+    int n = sizeof(parent)/sizeof(int);
+    bool visited[7] = {false};
+    tree.setRoot(tree.ConstructBinaryTree_from_Parent_Array(parent, n, visited));
 }
 
