@@ -507,6 +507,17 @@ public:
         return __max(__max(leftDiameter,rightDiameter),leftHeight+rightHeight+1);
     }
     
+    int min_depth(Node* root){
+        if (root == NULL) {
+            return 0;
+        }
+        
+        int leftDepth = min_depth(root->getLeft());
+        int rightDepth = min_depth(root->getRight());
+        
+        return (__min(leftDepth, rightDepth)+1);
+    }
+    
     void mirror(Node* root){
         if (root == NULL) {
             return;
@@ -889,11 +900,83 @@ public:
         cout << max_sum << endl;
     }
     
+    vector<int> maximumSumPath_Advanced(Node* root){
+        if (root == NULL) {
+            vector<int> vct;
+            vct.push_back(0);
+            vct.push_back(0);
+            return vct;
+        }
+        
+        vector<int> left = maximumSumPath_Advanced(root->getLeft());
+        vector<int> right = maximumSumPath_Advanced(root->getRight());
+        
+        vector<int> vct;
+        
+        (left[0] > right[0]) ? vct.push_back(left[0]+root->getData()) : vct.push_back(right[0]+root->getData());
+        
+        if (left[1] > right[1]) {
+            if (left[1] > left[0] + right[0] + root->getData()) {
+                vct.push_back(left[1]);
+            }
+            else {
+                vct.push_back(left[0] + right[0] + root->getData());
+            }
+        }
+        else {
+            if (right[1] > left[0] + right[0] + root->getData()) {
+                vct.push_back(right[1]);
+            }
+            else {
+                vct.push_back(left[0]+right[0] + root->getData());
+            }
+        }
+        return vct;
+    }
+    
+    
+private:
+    bool isIsomorphic_Recur(Node* root_1,Node* root_2){
+        if (root_1 == NULL && root_2 == NULL) {
+            return true;
+        }
+        else if (root_1 == NULL || root_2 == NULL){
+            return false;
+        }
+        
+        bool a = (root_1->getData() == root_2->getData());
+        
+        bool b_1 = isIsomorphic_Recur(root_1->getRight(), root_2->getRight());
+        bool b_2 = isIsomorphic_Recur(root_1->getLeft(), root_2->getLeft());
+        
+        bool c_1 = isIsomorphic_Recur(root_1->getLeft(), root_2->getRight());
+        bool c_2 = isIsomorphic_Recur(root_1->getRight(), root_2->getLeft());
+        
+        return (a && ((b_1 && b_2) || (c_1 && c_2)));
+    }
+public:
+    bool isIsomorphic(Node* root){
+        if (root == NULL) {
+            return true;
+        }
+        
+        return isIsomorphic_Recur(root, root);
+    }
+    
 private:
     
     // Auxilary Functions
     int __max(int a,int b){
         if (a > b) {
+            return a;
+        }
+        else {
+            return b;
+        }
+    }
+    
+    int __min(int a, int b){
+        if (a < b) {
             return a;
         }
         else {
@@ -1210,10 +1293,5 @@ public:
 
 
 int main(int argc, const char * argv[]) {
-    BinaryTree tree;
-    int parent[] = {1, 5, 5, 2, 2, -1, 3};
-    int n = sizeof(parent)/sizeof(int);
-    bool visited[7] = {false};
-    tree.setRoot(tree.ConstructBinaryTree_from_Parent_Array(parent, n, visited));
 }
 
