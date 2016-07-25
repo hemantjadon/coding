@@ -963,10 +963,30 @@ public:
         return isIsomorphic_Recur(root, root);
     }
     
+    bool isTraversalBST(int preorder[],int low, int high){
+        stack<int> ST;
+        
+        int root = INT_MIN;
+        
+        int i;
+        for (i=low; i<=high; i++) {
+            if (preorder[i] < root) {
+                return false;
+            }
+            
+            while (!ST.empty() && ST.top() < preorder[i]) {
+                root = ST.top();
+                ST.pop();
+            }
+            ST.push(preorder[i]);
+        }
+        return true;
+    }
+    
 private:
     
     // Auxilary Functions
-    int __max(int a,int b){
+    int __max(int a, int b){
         if (a > b) {
             return a;
         }
@@ -1293,5 +1313,9 @@ public:
 
 
 int main(int argc, const char * argv[]) {
+    BinaryTree tree;
+    int preorder[] = {40, 30, 35, 20, 80, 100};
+    int n = sizeof(preorder)/sizeof(int);
+    cout << tree.isTraversalBST(preorder, 0, n-1) << endl;
 }
 
