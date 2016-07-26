@@ -372,15 +372,26 @@ namespace Heap {
         
         return is_heap;
     }
-
-    
 }
 
+int ropeJoinProblem(int arr[],int n){
+    Heap::Heap h;
+    h.formHeap(arr, n);
+    
+    int result = 0;
+    
+    while (h.getSize() > 1) {
+        int min = h.extractMostPrior();
+        int sec_min = h.extractMostPrior();
 
+        result += (min + sec_min);
+        h.insert(min+sec_min);
+    }
+    return result;
+}
 
 int main(int argc, const char * argv[]) {
-    Heap::Heap h;
-    int arr[] = {9, 15, 10, 7, 12, 11};
+    int arr[] = {4, 3, 2, 6};
     int n = sizeof(arr)/sizeof(int);
-    cout << Heap::isArrayMaxHeap(arr, n) << endl;
+    cout << ropeJoinProblem(arr, n) << endl;
 }
