@@ -8,8 +8,8 @@
 
 
 #include <iostream>
-#define M 3
-#define N 3
+#define M 5
+#define N 5
 using namespace std;
 
 
