@@ -1157,6 +1157,41 @@ private:
         
         return a;
     }
+
+public:
+    Node* floor(Node* root,int key,Node* current_floor=NULL){
+        if (root == NULL) {
+            return current_floor;
+        }
+        
+        if (root->getData() == key) {
+            return root;
+        }
+        else if (root->getData() > key) {
+            return floor(root->getLeft(), key,current_floor);
+        }
+        else {
+            current_floor = root;
+            return floor(root->getRight(), key, current_floor);
+        }
+    }
+    
+    Node* ceil(Node* root,int key,Node* current_ceil=NULL){
+        if (root == NULL) {
+            return current_ceil;
+        }
+        
+        if (root->getData() == key) {
+            return root;
+        }
+        else if(root->getData() < key){
+            return ceil(root, key,current_ceil);
+        }
+        else {
+            current_ceil = root;
+            return ceil(root, key, current_ceil);
+        }
+    }
 };
 
 
@@ -1313,9 +1348,9 @@ public:
 
 
 int main(int argc, const char * argv[]) {
-    BinaryTree tree;
-    int preorder[] = {40, 30, 35, 20, 80, 100};
-    int n = sizeof(preorder)/sizeof(int);
-    cout << tree.isTraversalBST(preorder, 0, n-1) << endl;
+    BinarySearchTree tree;
+    
+    tree.CreateBST();
+    cout << tree.floor(tree.getRoot(), 1)->getData() << endl;
 }
 
