@@ -284,6 +284,35 @@ public:
         }
     }
     
+private:
+    void DiagonalTraversal_Recur(Node* root,map<int, vector<Node*>> &m,int diag_level=0){
+        if (root == NULL) {
+            return;
+        }
+        
+        m[diag_level].push_back(root);
+        
+        DiagonalTraversal_Recur(root->getLeft(), m, diag_level+1);
+        DiagonalTraversal_Recur(root->getRight(), m, diag_level);
+    }
+    
+public:
+    void DiagonalTraversal(Node* root){
+        map<int, vector<Node*>> m;
+        
+        DiagonalTraversal_Recur(root, m);
+        
+        map<int, vector<Node*>>::iterator it;
+        
+        for (it=m.begin(); it != m.end(); it++) {
+            vector<Node*>::iterator v_it;
+            
+            for (v_it = it->second.begin(); v_it != it->second.end(); v_it++) {
+                cout << (*v_it)->getData() << " ";
+            }
+            cout << endl;
+        }
+    }
     
     // Construct Tree from traversals
 
@@ -1351,6 +1380,6 @@ int main(int argc, const char * argv[]) {
     BinarySearchTree tree;
     
     tree.CreateBST();
-    cout << tree.floor(tree.getRoot(), 1)->getData() << endl;
+    tree.DiagonalTraversal(tree.getRoot());
 }
 
