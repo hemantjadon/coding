@@ -314,6 +314,45 @@ public:
         }
     }
     
+    void LevelOrderSpiralTraversal(Node* root){
+        if (root == NULL) {
+            return;
+        }
+        
+        stack<Node*> ST1;
+        stack<Node*> ST2;
+        
+        ST1.push(root);
+        
+        
+        while (!ST1.empty() || !ST2.empty()) {
+            while (!ST1.empty()) {
+                Node* ref = ST1.top();
+                cout << ref->getData() << " ";
+                ST1.pop();
+                
+                if (ref->getLeft()) {
+                    ST2.push(ref->getLeft());
+                }
+                if (ref->getRight()) {
+                    ST2.push(ref->getRight());
+                }
+            }
+            while (!ST2.empty()) {
+                Node* ref = ST2.top();
+                cout << ref->getData() << " ";
+                ST2.pop();
+                
+                if (ref->getRight()) {
+                    ST1.push(ref->getRight());
+                }
+                if (ref->getLeft()) {
+                    ST1.push(ref->getLeft());
+                }
+            }
+        }
+    }
+    
     // Construct Tree from traversals
 
     
@@ -992,22 +1031,20 @@ public:
         return isIsomorphic_Recur(root, root);
     }
     
-    bool isTraversalBST(int preorder[],int low, int high){
-        stack<int> ST;
+    bool isPreOrderBST(int preorder[],int n){
+        stack<int> st;
         
-        int root = INT_MIN;
+        int root=INT_MIN;
         
-        int i;
-        for (i=low; i<=high; i++) {
+        for (int i=0; i<n; i++) {
             if (preorder[i] < root) {
                 return false;
             }
-            
-            while (!ST.empty() && ST.top() < preorder[i]) {
-                root = ST.top();
-                ST.pop();
+            while (!st.empty() && st.top() < preorder[i]) {
+                root = st.top();
+                st.pop();
             }
-            ST.push(preorder[i]);
+            st.push(preorder[i]);
         }
         return true;
     }
@@ -1380,6 +1417,6 @@ int main(int argc, const char * argv[]) {
     BinarySearchTree tree;
     
     tree.CreateBST();
-    tree.DiagonalTraversal(tree.getRoot());
+    tree.LevelOrderSpiralTraversal(tree.getRoot());
 }
 
