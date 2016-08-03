@@ -1258,6 +1258,32 @@ public:
             return ceil(root, key, current_ceil);
         }
     }
+    
+    Node* BalancedBSTFromSortedArray(int arr[],int low,int high){
+        if (low > high) {
+            return NULL;
+        }
+        
+        int mid = low + (high-low)/2;
+        
+        Node* root = new Node(arr[mid]);
+        
+        Node* left = BalancedBSTFromSortedArray(arr, low, mid-1);
+        Node* right = BalancedBSTFromSortedArray(arr, mid+1, high);
+        
+        root->setLeft(left);
+        root->setRight(right);
+        return root;
+    }
+    
+    Node* BalancedBSTFromSortedLinkedlist(){
+        
+    }
+    
+    Node* mergeTwoBST(Node* root1,Node* root2){
+        
+        return root1;
+    }
 };
 
 
@@ -1416,7 +1442,13 @@ public:
 int main(int argc, const char * argv[]) {
     BinarySearchTree tree;
     
-    tree.CreateBST();
-    tree.LevelOrderSpiralTraversal(tree.getRoot());
+    int arr[] = {1,2,3,4,5,6,7};
+    int n = sizeof(arr)/sizeof(arr[0]);
+    
+    tree.setRoot(tree.BalancedBSTFromSortedArray(arr, 0, n-1));
+    tree.InOrderTraversal(tree.getRoot());
+    cout << endl;
+    tree.PreOrderTraversal(tree.getRoot());
+    cout << endl;
 }
 
