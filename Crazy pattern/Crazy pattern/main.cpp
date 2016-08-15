@@ -12,7 +12,7 @@
 using namespace std;
 
 int main(int argc, const char * argv[]) {
-    unsigned long n=LONG_LONG_MAX;
+    unsigned long n=53;
     unsigned long dup = n;
     
     unsigned long quotient=0;

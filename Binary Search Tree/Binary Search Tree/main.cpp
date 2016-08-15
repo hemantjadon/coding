@@ -11,6 +11,7 @@
 #include <stack>
 #include <vector>
 #include <map>
+#include <list>
 #include <math.h>
 using namespace std;
 
@@ -1042,11 +1043,26 @@ public:
             }
             while (!st.empty() && st.top() < preorder[i]) {
                 root = st.top();
-                st.pop();
+                st.pop();\
             }
             st.push(preorder[i]);
         }
         return true;
+    }
+    
+    bool isBST(Node* root,int max = INT_MAX,int min = INT_MIN){
+        if (root == NULL) {
+            return true;
+        }
+        
+        if ((root->getData() < min) || (root->getData() > max)) {
+            return false;
+        }
+        
+        bool a = isBST(root->getLeft(),root->getData(),min);
+        bool b = isBST(root->getRight(),max,root->getData());
+        
+        return (a && b);
     }
     
 private:
@@ -1276,13 +1292,177 @@ public:
         return root;
     }
     
-    Node* BalancedBSTFromSortedLinkedlist(){
+private:
+    Node* BalancedBSTFromSortedLL_Recur(list<int> ll,list<int>::iterator &it,int n){
+        if (n <= 0) {
+            return NULL;
+        }
         
+        Node* left = BalancedBSTFromSortedLL_Recur(ll, it, n/2);
+        
+        Node* root = new Node((*it));
+        if (left) {
+            it++;
+        }
+        it++;
+        
+        root->setLeft(left);
+        
+        Node* right = BalancedBSTFromSortedLL_Recur(ll, it, n/2);
+        root->setRight(right);
+        if (right) {
+            it++;
+        }
+        return root;
+    }
+    
+public:
+    Node* BalancedBSTFromSortedLinkedlist(list<int> ll){
+        list<int>::iterator it=ll.begin();
+        
+        return BalancedBSTFromSortedLL_Recur(ll, it, int(ll.size()));
     }
     
     Node* mergeTwoBST(Node* root1,Node* root2){
         
         return root1;
+    }
+    
+    bool isSumEqual(Node* root, int sum){
+        stack<Node*> s1;
+        stack<Node*> s2;
+        
+        Node* x = root;
+        Node* y = root;
+        
+        while (true) {
+            while (x) {
+                s1.push(x);
+                x = x->getLeft();
+            }
+            
+            while (y) {
+                s2.push(y);
+                y = y->getRight();
+            }
+            
+            if (s1.empty() || s2.empty() || (s1.top()->getData() >= s2.top()->getData())) {
+                return false;
+            }
+            
+            int a = s1.top()->getData();
+            int b = s2.top()->getData();
+            
+            if ((a+b) == sum) {
+                return true;
+            }
+            
+            if ((a+b) > sum) {
+                y = s2.top()->getLeft();
+                s2.pop();
+            }
+            else {
+                x = s1.top()->getRight();
+                s1.pop();
+            }
+        }
+        return false;
+    }
+    
+    Node* LCA_BST(Node* root,int x,int y){
+        if (root == NULL) {
+            return NULL;
+        }
+        
+        if ((root->getData() == x) || (root->getData() == y)) {
+            return root;
+        }
+        
+        else if ((root->getData() > x) && (root->getData() < y)) {
+            return root;
+        }
+        
+        else if ((root->getData() < x) && (root->getData() >y)) {
+            return root;
+        }
+        
+        else if ((root->getData() > x) && (root->getData() > y)) {
+            return LCA_BST(root->getLeft(), x, y);
+        }
+        
+        else if ((root->getData() < x) && (root->getData() < y)) {
+            return LCA_BST(root->getRight(), x, y);
+        }
+        
+        return root;
+    }
+    
+    void SortedOrderPrint_Array_CompleteBST(int arr[],int n,int i=0){
+        if (i >= n) {
+            return;
+        }
+        
+        int l_idx = 2*i+1;
+        int r_idx = 2*i+2;
+        
+        SortedOrderPrint_Array_CompleteBST(arr, n, l_idx);
+        cout << arr[i] << " ";
+        SortedOrderPrint_Array_CompleteBST(arr, n, r_idx);
+    }
+    
+    Node* KthSmallestElement(Node* root,int k){
+        //  Using Morris Traversal
+        if (root == NULL) {
+            return NULL;
+        }
+        
+        Node* ksmall = NULL;
+        
+        while (root != NULL) {
+            if (root->getLeft() == NULL) {
+                k--;
+                if (k == 0) {
+                    ksmall = root;
+                }
+                root = root->getRight();
+            }
+            else {
+                Node* predecessor = root->getLeft();
+                
+                while (predecessor->getRight() != NULL && predecessor->getRight() != root) {
+                    predecessor = predecessor->getRight();
+                }
+                
+                if (predecessor->getRight() == NULL) {
+                    predecessor->setRight(root);
+                    root = root->getLeft();
+                }
+                else {
+                    predecessor->setRight(NULL);
+                    k--;
+                    if (k == 0) {
+                        ksmall = root;
+                    }
+                    root = root->getRight();
+                }
+            }
+        }
+        return ksmall;
+    }
+    
+    void printBSTKeysInGivenRange(Node* root,int k1,int k2){
+        if (root == NULL) {
+            return;
+        }
+        if (k1 < root->getData()) {
+            printBSTKeysInGivenRange(root->getLeft(), k1, k2);
+        }
+        if (k1 < root->getData() && k2 > root->getData()) {
+            cout << root->getData() << " " ;
+        }
+        if (k2 > root->getData()) {
+            printBSTKeysInGivenRange(root->getRight(), k1, k2);
+        }
     }
 };
 
@@ -1442,13 +1622,7 @@ public:
 int main(int argc, const char * argv[]) {
     BinarySearchTree tree;
     
-    int arr[] = {1,2,3,4,5,6,7};
-    int n = sizeof(arr)/sizeof(arr[0]);
-    
-    tree.setRoot(tree.BalancedBSTFromSortedArray(arr, 0, n-1));
-    tree.InOrderTraversal(tree.getRoot());
-    cout << endl;
-    tree.PreOrderTraversal(tree.getRoot());
-    cout << endl;
+    tree.CreateBST();
+    tree.printBSTKeysInGivenRange(tree.getRoot(), 2, 7);
 }
 
