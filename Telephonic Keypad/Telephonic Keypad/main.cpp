@@ -26,7 +26,7 @@ void telephonic_keypad(int number[],int n,int curr_num=0,string output=""){
 }
 
 int main(int argc, const char * argv[]) {
-    int number[] = {7,8};
+    int number[] = {1,2};
     int n = sizeof(number)/sizeof(number[0]);
     telephonic_keypad(number, n);
 }
